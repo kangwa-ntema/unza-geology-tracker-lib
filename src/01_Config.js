@@ -61,9 +61,8 @@ const VERSION_HISTORY = {
 
   // 🏛️ THIN TEMPLATE ARCHITECTURE
   '0.15.0':
-    'THIN TEMPLATE MIGRATION: Moved all template-side logic (VersionSync, Constants, Utils, LocalFunctions, Tests, LibraryChecker) into library as 26_TemplateHelpers.js; Template now reduced to single ultra-thin file; Updates now propagate automatically to all users; Professional enterprise architecture achieved'
+    'THIN TEMPLATE MIGRATION: Moved all template-side logic (VersionSync, Constants, Utils, LocalFunctions, Tests, LibraryChecker) into library as 26_TemplateHelpers.js; Template now reduced to single ultra-thin file; Updates now propagate automatically to all users; Professional enterprise architecture achieved',
 };
-
 
 function getVersionInfo() {
   return `UNZA Geology Tracker v${APP_VERSION}`;

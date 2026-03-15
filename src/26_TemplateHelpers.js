@@ -1,9 +1,9 @@
 // 26_TemplateHelpers.gs
 
 // ==============================================
-// TEMPLATE HELPER FUNCTIONS - COMPLETE
+// TEMPLATE HELPER FUNCTIONS - COMPLETE FIXED VERSION
 // All template-side logic moved to library
-// Version: 0.14.1
+// Version: 0.15.0
 // ==============================================
 
 // ==============================================
@@ -14,26 +14,25 @@ const TemplateVersion = {
   /**
    * Get version from library
    */
-  getVersion: function() {
+  getVersion: function () {
     if (!GeologyLib) {
-      return { 
-        success: false, 
-        version: "unknown", 
-        message: "Library not loaded" 
+      return {
+        success: false,
+        version: 'unknown',
+        message: 'Library not loaded',
       };
     }
 
-    // Method 1: getVersionInfo()
     if (typeof GeologyLib.getVersionInfo === 'function') {
       try {
         const versionInfo = GeologyLib.getVersionInfo();
         const versionMatch = versionInfo.match(/v(\d+\.\d+\.\d+)/);
         if (versionMatch) {
-          return { 
-            success: true, 
+          return {
+            success: true,
             version: versionMatch[1],
             full: versionInfo,
-            method: 'getVersionInfo'
+            method: 'getVersionInfo',
           };
         }
       } catch (e) {
@@ -41,37 +40,32 @@ const TemplateVersion = {
       }
     }
 
-    // Method 2: Direct APP_VERSION access
     if (GeologyLib.APP_VERSION) {
-      return { 
-        success: true, 
+      return {
+        success: true,
         version: GeologyLib.APP_VERSION,
         full: `UNZA Geology Tracker v${GeologyLib.APP_VERSION}`,
-        method: 'APP_VERSION'
+        method: 'APP_VERSION',
       };
     }
 
-    // Method 3: CONFIG access
     if (GeologyLib.CONFIG && GeologyLib.CONFIG.version) {
-      return { 
-        success: true, 
+      return {
+        success: true,
         version: GeologyLib.CONFIG.version,
         full: `UNZA Geology Tracker v${GeologyLib.CONFIG.version}`,
-        method: 'CONFIG'
+        method: 'CONFIG',
       };
     }
 
-    return { 
-      success: false, 
-      version: "unknown", 
-      message: "No version info available" 
+    return {
+      success: false,
+      version: 'unknown',
+      message: 'No version info available',
     };
   },
 
-  /**
-   * Show version info (combines template and library)
-   */
-  showVersion: function() {
+  showVersion: function () {
     const ui = SpreadsheetApp.getUi();
     const libVersion = this.getVersion();
 
@@ -103,10 +97,7 @@ const TemplateVersion = {
     ui.alert(message);
   },
 
-  /**
-   * Check if template and library versions are compatible
-   */
-  checkCompatibility: function() {
+  checkCompatibility: function () {
     const libVersion = this.getVersion();
 
     if (!libVersion.success) {
@@ -114,33 +105,31 @@ const TemplateVersion = {
         compatible: false,
         message: 'Cannot check compatibility - library not connected',
         libVersion: 'unknown',
-        minRequired: '0.14.0'
+        minRequired: '0.14.0',
       };
     }
 
-    // Parse versions
     const libParts = libVersion.version.split('.').map(Number);
-    const minParts = [0, 14, 0]; // Minimum required version for profile system
+    const minParts = [0, 14, 0];
 
-    // Check major version first
     if (libParts[0] !== minParts[0]) {
       return {
         compatible: libParts[0] > minParts[0],
-        message: libParts[0] > minParts[0] 
-          ? 'Library major version is newer - should be compatible'
-          : 'Library major version is older - may have compatibility issues',
+        message:
+          libParts[0] > minParts[0]
+            ? 'Library major version is newer - should be compatible'
+            : 'Library major version is older - may have compatibility issues',
         libVersion: libVersion.version,
-        minRequired: '0.14.0'
+        minRequired: '0.14.0',
       };
     }
 
-    // Check minor version
     if (libParts[1] < minParts[1]) {
       return {
         compatible: false,
         message: `Library version ${libVersion.version} is older than required 0.14.0 - please update library`,
         libVersion: libVersion.version,
-        minRequired: '0.14.0'
+        minRequired: '0.14.0',
       };
     }
 
@@ -148,13 +137,13 @@ const TemplateVersion = {
       compatible: true,
       message: `Library v${libVersion.version} is compatible`,
       libVersion: libVersion.version,
-      minRequired: '0.14.0'
+      minRequired: '0.14.0',
     };
-  }
+  },
 };
 
 // ==============================================
-// CONSTANTS (from template 03_Constants.js)
+// CONSTANTS
 // ==============================================
 
 const TEMPLATE_CONSTANTS = {
@@ -164,25 +153,22 @@ const TEMPLATE_CONSTANTS = {
     WELCOME: '👋 Welcome to UNZA Geology Tracker!',
     NO_LIBRARY: '⚠️ Library not connected. Please check your configuration.',
     INIT_NEEDED: 'Please initialize the system first (System → Initialize System)',
-    LOADING: '⏳ Loading template modules...'
+    LOADING: '⏳ Loading template modules...',
   },
   COLORS: {
     PRIMARY: '#1a73e8',
     SUCCESS: '#0f9d58',
     WARNING: '#f4b400',
-    DANGER: '#d93025'
-  }
+    DANGER: '#d93025',
+  },
 };
 
 // ==============================================
-// UTILITY FUNCTIONS (from template 04_Utils.js)
+// UTILITY FUNCTIONS
 // ==============================================
 
 const TemplateUtils = {
-  /**
-   * Safely call a library function with error handling
-   */
-  safeCall: function(functionName, ...args) {
+  safeCall: function (functionName, ...args) {
     try {
       if (!GeologyLib) {
         this.showLibraryNotLoadedError();
@@ -203,45 +189,45 @@ const TemplateUtils = {
     }
   },
 
-  showLibraryNotLoadedError: function() {
+  showLibraryNotLoadedError: function () {
     const ui = SpreadsheetApp.getUi();
     ui.alert(
       '⚠️ Library Not Loaded',
       'The Geology Tracker library is not loaded.\n\n' +
-      'Please check:\n' +
-      '1. The library is properly linked\n' +
-      '2. You have proper permissions\n\n' +
-      'Run "Show Library Diagnostic" for details.',
+        'Please check:\n' +
+        '1. The library is properly linked\n' +
+        '2. You have proper permissions\n\n' +
+        'Run "Show Library Diagnostic" for details.',
       ui.ButtonSet.OK
     );
   },
 
-  showFunctionError: function(functionName) {
+  showFunctionError: function (functionName) {
     const ui = SpreadsheetApp.getUi();
     ui.alert(
       '⚠️ Function Not Available',
       `The function "${functionName}" is not available in the library.\n\n` +
-      'This may be due to an outdated library version.\n\n' +
-      'Please contact your administrator.',
+        'This may be due to an outdated library version.\n\n' +
+        'Please contact your administrator.',
       ui.ButtonSet.OK
     );
   },
 
-  showLibraryError: function(functionName, error) {
+  showLibraryError: function (functionName, error) {
     const ui = SpreadsheetApp.getUi();
     ui.alert(
       '⚠️ Library Error',
       `Error calling ${functionName}:\n\n${error.toString()}\n\n` +
-      'Please check your library connection.',
+        'Please check your library connection.',
       ui.ButtonSet.OK
     );
   },
 
-  isLibraryAvailable: function() {
+  isLibraryAvailable: function () {
     return !!(GeologyLib && Object.keys(GeologyLib).length > 0);
   },
 
-  getLibraryStatus: function() {
+  getLibraryStatus: function () {
     if (!GeologyLib) {
       return { connected: false, reason: 'Library object not found' };
     }
@@ -249,32 +235,32 @@ const TemplateUtils = {
     try {
       if (typeof GeologyLib.getVersionInfo === 'function') {
         const version = GeologyLib.getVersionInfo();
-        return { 
-          connected: true, 
+        return {
+          connected: true,
           version: version,
-          message: `Connected to ${version}`
+          message: `Connected to ${version}`,
         };
       } else {
-        return { 
-          connected: false, 
-          reason: 'Library functions not accessible' 
+        return {
+          connected: false,
+          reason: 'Library functions not accessible',
         };
       }
     } catch (e) {
-      return { 
-        connected: false, 
-        reason: e.toString() 
+      return {
+        connected: false,
+        reason: e.toString(),
       };
     }
-  }
+  },
 };
 
 // ==============================================
-// LOCAL FUNCTIONS (from template 05_LocalFunctions.js)
+// LOCAL FUNCTIONS
 // ==============================================
 
 const TemplateLocal = {
-  viewFeeStructure: function() {
+  viewFeeStructure: function () {
     const html = HtmlService.createHtmlOutput(`
       <html>
         <head>
@@ -314,12 +300,12 @@ const TemplateLocal = {
     SpreadsheetApp.getUi().showModalDialog(html, '💰 Fee Structure');
   },
 
-  showHelp: function() {
+  showHelp: function () {
     const status = TemplateUtils.getLibraryStatus();
-    const statusMessage = status.connected 
-      ? `<span style="color:#0f9d58">✅ ${status.message}</span>` 
+    const statusMessage = status.connected
+      ? `<span style="color:#0f9d58">✅ ${status.message}</span>`
       : `<span style="color:#d93025">❌ Library not connected</span>`;
-    
+
     const version = typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'unknown';
 
     const html = HtmlService.createHtmlOutput(`
@@ -386,13 +372,13 @@ const TemplateLocal = {
     SpreadsheetApp.getUi().showModalDialog(html, '📋 User Guide');
   },
 
-  showVersion: function() {
+  showVersion: function () {
     const ui = SpreadsheetApp.getUi();
     const status = TemplateUtils.getLibraryStatus();
-    
+
     let message = `📍 UNZA Geology Tracker v${APP_VERSION || 'unknown'}\n\n`;
     message += `Template Version: Thin Client\n\n`;
-    
+
     if (status.connected) {
       message += `✅ ${status.message}`;
     } else {
@@ -400,39 +386,39 @@ const TemplateLocal = {
       message += `Reason: ${status.reason || 'Unknown error'}`;
     }
     ui.alert(message);
-  }
+  },
 };
 
 // ==============================================
-// TEST SUITE (from template 07_Tests.js)
+// TEST SUITE
 // ==============================================
 
 const TemplateTests = {
-  runAllTemplateTests: function() {
+  runAllTemplateTests: function () {
     console.log('🔬 STARTING TEMPLATE TEST SUITE');
-    
+
     let results = {
       passed: 0,
       failed: 0,
       total: 0,
-      details: []
+      details: [],
     };
 
     this.testLibraryConnection(results);
     this.testUtils(results);
     this.testVersionConsistency(results);
-    
+
     this.showResults(results);
   },
 
-  testLibraryConnection: function(results) {
+  testLibraryConnection: function (results) {
     console.log('\n🔗 Testing LIBRARY CONNECTION...');
-    
+
     results.total++;
-    
+
     try {
       const status = TemplateUtils.getLibraryStatus();
-      
+
       if (status.connected) {
         console.log(`    ✓ Connected - ${status.message}`);
         results.passed++;
@@ -447,18 +433,18 @@ const TemplateTests = {
     }
   },
 
-  testUtils: function(results) {
+  testUtils: function (results) {
     console.log('\n🔧 Testing UTILITY functions...');
     results.total++;
-    
+
     try {
       const utilFunctions = ['safeCall', 'isLibraryAvailable', 'getLibraryStatus'];
       let workingCount = 0;
-      
-      utilFunctions.forEach(f => {
+
+      utilFunctions.forEach((f) => {
         if (typeof TemplateUtils[f] === 'function') workingCount++;
       });
-      
+
       if (workingCount === utilFunctions.length) {
         console.log(`    ✓ All utilities available`);
         results.passed++;
@@ -473,13 +459,13 @@ const TemplateTests = {
     }
   },
 
-  testVersionConsistency: function(results) {
+  testVersionConsistency: function (results) {
     console.log('\n📌 Testing VERSION consistency...');
     results.total++;
-    
+
     try {
       const status = TemplateUtils.getLibraryStatus();
-      
+
       if (status.connected) {
         console.log(`    ✓ Library connected`);
         results.passed++;
@@ -495,53 +481,53 @@ const TemplateTests = {
     }
   },
 
-  showResults: function(results) {
+  showResults: function (results) {
     const ui = SpreadsheetApp.getUi();
-    
+
     const percentage = results.total > 0 ? Math.round((results.passed / results.total) * 100) : 0;
-    
+
     const barLength = 30;
     const filled = Math.round((percentage / 100) * barLength);
     const bar = '█'.repeat(filled) + '░'.repeat(barLength - filled);
-    
+
     let message = `📋 TEMPLATE TEST RESULTS\n\n`;
     message += `${bar} ${percentage}%\n\n`;
     message += `✅ Passed: ${results.passed}\n`;
     message += `❌ Failed: ${results.failed}\n`;
     message += `📊 Total:  ${results.total}\n\n`;
-    
-    const failed = results.details.filter(d => d.includes('❌'));
+
+    const failed = results.details.filter((d) => d.includes('❌'));
     if (failed.length > 0) {
       message += '🔴 FAILED:\n';
-      failed.forEach(f => message += f + '\n');
+      failed.forEach((f) => (message += f + '\n'));
     }
-    
+
     ui.alert(message);
-  }
+  },
 };
 
 // ==============================================
-// LIBRARY CHECKER (from template 10_LibraryChecker.js)
+// LIBRARY CHECKER
 // ==============================================
 
 const LibraryChecker = {
-  checkStatus: function() {
+  checkStatus: function () {
     console.log('🔍 Checking library status...');
-    
+
     const result = {
       libraryExists: typeof GeologyLib !== 'undefined',
       libraryType: typeof GeologyLib,
       isObject: GeologyLib !== null && typeof GeologyLib === 'object',
       functionCount: 0,
-      version: null
+      version: null,
     };
 
     if (result.libraryExists && result.isObject) {
       try {
         result.functionCount = Object.keys(GeologyLib).filter(
-          key => typeof GeologyLib[key] === 'function'
+          (key) => typeof GeologyLib[key] === 'function'
         ).length;
-        
+
         if (typeof GeologyLib.getVersionInfo === 'function') {
           result.version = GeologyLib.getVersionInfo();
         }
@@ -553,40 +539,40 @@ const LibraryChecker = {
     return result;
   },
 
-  forceReload: function() {
+  forceReload: function () {
     console.log('🔄 Forcing library reload...');
     const status = this.checkStatus();
-    
+
     if (status.libraryExists && status.isObject) {
       console.log(`✅ Library found with ${status.functionCount} functions`);
       if (status.version) console.log(`📚 Version: ${status.version}`);
     }
-    
+
     return status;
   },
 
-  showStatus: function() {
+  showStatus: function () {
     const ui = SpreadsheetApp.getUi();
     const status = this.forceReload();
-    
+
     let message = '🔍 LIBRARY CONNECTION DIAGNOSTIC\n\n';
     message += `📚 Library exists: ${status.libraryExists ? '✅ YES' : '❌ NO'}\n`;
-    
+
     if (status.libraryExists) {
       message += `📦 Type: ${status.libraryType}\n`;
       message += `🔧 Is object: ${status.isObject ? '✅ YES' : '❌ NO'}\n`;
-      
+
       if (status.isObject) {
         message += `\n📋 FUNCTIONS:\n`;
         message += `  • Total functions: ${status.functionCount}\n`;
-        
+
         if (status.version) {
           message += `\n🔢 VERSION:\n`;
           message += `  • ${status.version}\n`;
         }
       }
     }
-    
+
     message += `\n📌 RECOMMENDATIONS:\n`;
     if (!status.libraryExists) {
       message += `  • Add library in Apps Script → Libraries\n`;
@@ -600,24 +586,24 @@ const LibraryChecker = {
     } else {
       message += `  • ✅ Library is properly connected!\n`;
     }
-    
+
     ui.alert(message);
   },
 
-  quickFix: function() {
+  quickFix: function () {
     const ui = SpreadsheetApp.getUi();
     const status = this.checkStatus();
-    
+
     if (!status.libraryExists) {
       ui.alert(
         '❌ Cannot Fix Automatically',
         'Please add the library manually:\n\n' +
-        '1. Go to Extensions → Apps Script\n' +
-        '2. Click "Libraries" in left sidebar\n' +
-        '3. Add Library ID: 1cCt4YE5RJn0Ow4vDExwJ5VcASWW-UfgiIFBQt5eFk0dxnU4yP3LKBpx2\n' +
-        '4. Set Identifier to: GeologyLib\n' +
-        '5. Select the latest version\n' +
-        '6. Click Add',
+          '1. Go to Extensions → Apps Script\n' +
+          '2. Click "Libraries" in left sidebar\n' +
+          '3. Add Library ID: 1cCt4YE5RJn0Ow4vDExwJ5VcASWW-UfgiIFBQt5eFk0dxnU4yP3LKBpx2\n' +
+          '4. Set Identifier to: GeologyLib\n' +
+          '5. Select the latest version\n' +
+          '6. Click Add',
         ui.ButtonSet.OK
       );
     } else {
@@ -627,28 +613,248 @@ const LibraryChecker = {
         ui.ButtonSet.OK
       );
     }
-  }
+  },
 };
 
 // ==============================================
-// GLOBAL FUNCTIONS - Export everything
+// GLOBAL WRAPPER FUNCTIONS - FIXED VERSION
+// These make ALL library functions available to the thin template
 // ==============================================
 
-// Version functions
-function showVersion() { TemplateVersion.showVersion(); }
-function checkVersionCompatibility() { TemplateVersion.checkCompatibility(); }
+// Dashboard & GPA
+function showUNZADashboard() { 
+  return showUNZADashboard ? showUNZADashboard() : null;
+}
 
-// Local functions
-function viewFeeStructure() { TemplateLocal.viewFeeStructure(); }
-function showHelp() { TemplateLocal.showHelp(); }
+function showGPADetails() { 
+  return showGPADetails ? showGPADetails() : null;
+}
 
-// Test functions
-function testLibraryConnection() { TemplateTests.testLibraryConnection(); }
-function runAllTemplateTests() { TemplateTests.runAllTemplateTests(); }
+function showProfileEditor() { 
+  if (typeof ProfileManager !== 'undefined' && typeof ProfileManager.showProfileEditor === 'function') {
+    return ProfileManager.showProfileEditor();
+  }
+  return null;
+}
 
-// Library checker functions
-function showLibraryDiagnostic() { LibraryChecker.showStatus(); }
-function fixLibraryConnection() { LibraryChecker.quickFix(); }
-function forceLibraryReload() { LibraryChecker.forceReload(); }
+function viewProfile() { 
+  if (typeof ProfileManager !== 'undefined' && typeof ProfileManager.viewProfile === 'function') {
+    return ProfileManager.viewProfile();
+  }
+  return null;
+}
+
+function showProgramRequirements() { 
+  return showProgramRequirements ? showProgramRequirements() : null;
+}
+
+function checkGraduationReadiness() { 
+  return checkGraduationReadiness ? checkGraduationReadiness() : null;
+}
+
+// Courses
+function viewAllCourses() { 
+  return viewAllCourses ? viewAllCourses() : null;
+}
+
+function addCourse() { 
+  return addCourse ? addCourse() : null;
+}
+
+function viewAssessments() { 
+  return viewAssessments ? viewAssessments() : null;
+}
+
+function addAssessment() { 
+  return addAssessment ? addAssessment() : null;
+}
+
+function showCourseProgress() { 
+  return showCourseProgress ? showCourseProgress() : null;
+}
+
+// Grades
+function viewGrades() { 
+  return viewGrades ? viewGrades() : null;
+}
+
+function enterGrades() { 
+  return enterGrades ? enterGrades() : null;
+}
+
+// Certifications
+function viewCertifications() { 
+  return viewCertifications ? viewCertifications() : null;
+}
+
+function addCertification() { 
+  return addCertification ? addCertification() : null;
+}
+
+function checkCertExpiry() { 
+  return checkCertExpiry ? checkCertExpiry() : null;
+}
+
+// Training
+function viewTraining() { 
+  return viewTraining ? viewTraining() : null;
+}
+
+function addTraining() { 
+  return addTraining ? addTraining() : null;
+}
+
+function trackTrainingHours() { 
+  return trackTrainingHours ? trackTrainingHours() : null;
+}
+
+// Expenses
+function viewExpenses() { 
+  return viewExpenses ? viewExpenses() : null;
+}
+
+function addExpense() { 
+  return addExpense ? addExpense() : null;
+}
+
+function spendingAnalysis() { 
+  return spendingAnalysis ? spendingAnalysis() : null;
+}
+
+function viewFeeStructure() { 
+  return TemplateLocal.viewFeeStructure();
+}
+
+// Schedule
+function showTodaysSchedule() { 
+  return showTodaysSchedule ? showTodaysSchedule() : null;
+}
+
+function showWeeklySchedule() { 
+  return showWeeklySchedule ? showWeeklySchedule() : null;
+}
+
+function viewFullTimetable() { 
+  return viewFullTimetable ? viewFullTimetable() : null;
+}
+
+function showUpcomingDeadlines() { 
+  return showUpcomingDeadlines ? showUpcomingDeadlines() : null;
+}
+
+function viewStudySessions() { 
+  return viewStudySessions ? viewStudySessions() : null;
+}
+
+function addStudySession() { 
+  return addStudySession ? addStudySession() : null;
+}
+
+function addDueDate() { 
+  return addDueDate ? addDueDate() : null;
+}
+
+// Documents
+function uploadScript() { 
+  return uploadScript ? uploadScript() : null;
+}
+
+function openFolders() { 
+  return openFolders ? openFolders() : null;
+}
+
+function searchDocuments() { 
+  return searchDocuments ? searchDocuments() : null;
+}
+
+// Reports
+function createUNZAReport() { 
+  return createUNZAReport ? createUNZAReport() : null;
+}
+
+function emailProgressReport() { 
+  return emailProgressReport ? emailProgressReport() : null;
+}
+
+// System
+function initializeCompleteSystem() { 
+  return initializeCompleteSystem ? initializeCompleteSystem() : null;
+}
+
+function softReset() { 
+  return softReset ? softReset() : null;
+}
+
+function nukeSystem() { 
+  return nukeSystem ? nukeSystem() : null;
+}
+
+function showHiddenTables() { 
+  return showHiddenTables ? showHiddenTables() : null;
+}
+
+function hideDatabaseTables() { 
+  return hideDatabaseTables ? hideDatabaseTables() : null;
+}
+
+function showNormalizedTables() { 
+  return showNormalizedTables ? showNormalizedTables() : null;
+}
+
+function upgradeStudentsTable() { 
+  return upgradeStudentsTable ? upgradeStudentsTable() : null;
+}
+
+// ==============================================
+// EXPORTED HELPER FUNCTIONS
+// ==============================================
+
+function showVersion() {
+  TemplateVersion.showVersion();
+}
+
+function checkVersionCompatibility() {
+  return TemplateVersion.checkCompatibility();
+}
+
+function showHelp() {
+  TemplateLocal.showHelp();
+}
+
+function testLibraryConnection() {
+  TemplateTests.testLibraryConnection();
+}
+
+function runAllTemplateTests() {
+  TemplateTests.runAllTemplateTests();
+}
+
+function showLibraryDiagnostic() {
+  LibraryChecker.showStatus();
+}
+
+function fixLibraryConnection() {
+  LibraryChecker.quickFix();
+}
+
+function forceLibraryReload() {
+  LibraryChecker.forceReload();
+}
+
+function debugAvailableFunctions() {
+  const functions = {
+    showUNZADashboard: typeof showUNZADashboard === 'function',
+    showGPADetails: typeof showGPADetails === 'function',
+    showProfileEditor: typeof ProfileManager?.showProfileEditor === 'function',
+    viewProfile: typeof ProfileManager?.viewProfile === 'function',
+    calculateUNGPA: typeof calculateUNGPA === 'function',
+    showProgramRequirements: typeof showProgramRequirements === 'function',
+    checkGraduationReadiness: typeof checkGraduationReadiness === 'function',
+    viewAllCourses: typeof viewAllCourses === 'function',
+    addCourse: typeof addCourse === 'function',
+  };
+  console.log('📊 Available functions:', functions);
+  return functions;
+}
 
 console.log('✅ Template helpers loaded successfully');

@@ -1,6 +1,6 @@
 ========================================
 REPO: scholarscript_-_unza_school_of_mines_(geology_lib)
-DATE: Sun Mar 15 07:53:48 PM CAT 2026
+DATE: Sun Mar 15 08:41:12 PM CAT 2026
 ========================================
 
 // FILE: 01_Config.js
@@ -16,7 +16,7 @@ DATE: Sun Mar 15 07:53:48 PM CAT 2026
 // VERSION CONTROL - COMPLETE HISTORY v0.9.0 to v0.14.0
 // ==============================================
 
-const APP_VERSION = '0.14.1';
+const APP_VERSION = '0.15.0';
 const VERSION_HISTORY = {
   // Initial versions
   '0.9.0': 'Initial complete system with 14 sheets',
@@ -65,6 +65,10 @@ const VERSION_HISTORY = {
   // 🐛 DASHBOARD FIXES
   '0.14.1':
     'FIXED: Dashboard error with getCourseCount function; Ensured all helper functions are properly exported; Improved dashboard stability and error handling',
+
+  // 🏛️ THIN TEMPLATE ARCHITECTURE
+  '0.15.0':
+    'THIN TEMPLATE MIGRATION: Moved all template-side logic (VersionSync, Constants, Utils, LocalFunctions, Tests, LibraryChecker) into library as 26_TemplateHelpers.js; Template now reduced to single ultra-thin file; Updates now propagate automatically to all users; Professional enterprise architecture achieved',
 };
 
 function getVersionInfo() {
@@ -1432,97 +1436,127 @@ function onOpen() {
     .addSeparator()
 
     // ========== COURSES ==========
-    .addSubMenu(ui.createMenu('📚 Courses')
-      .addItem('👁️ View All Courses', 'viewAllCourses')
-      .addItem('➕ Add Course', 'showAddCourseModal')
-      .addSeparator()
-      .addItem('📝 View Assessments', 'viewAssessments')
-      .addItem('➕ Add Assessment', 'showAddAssessmentModal')
-      .addItem('📊 Course Progress', 'showCourseProgress'))
+    .addSubMenu(
+      ui
+        .createMenu('📚 Courses')
+        .addItem('👁️ View All Courses', 'viewAllCourses')
+        .addItem('➕ Add Course', 'showAddCourseModal')
+        .addSeparator()
+        .addItem('📝 View Assessments', 'viewAssessments')
+        .addItem('➕ Add Assessment', 'showAddAssessmentModal')
+        .addItem('📊 Course Progress', 'showCourseProgress')
+    )
 
     // ========== GRADES ==========
-    .addSubMenu(ui.createMenu('📊 Grades')
-      .addItem('📈 View My Grades', 'viewGrades')
-      .addItem('✏️ Enter Grades', 'enterGrades'))
+    .addSubMenu(
+      ui
+        .createMenu('📊 Grades')
+        .addItem('📈 View My Grades', 'viewGrades')
+        .addItem('✏️ Enter Grades', 'enterGrades')
+    )
 
     // ========== CERTIFICATIONS ==========
-    .addSubMenu(ui.createMenu('🛡️ Certifications')
-      .addItem('👁️ View All', 'viewCertifications')
-      .addItem('➕ Add Certification', 'showAddCertificationModal')
-      .addSeparator()
-      .addItem('⏰ Expiry Alerts', 'checkCertExpiry'))
+    .addSubMenu(
+      ui
+        .createMenu('🛡️ Certifications')
+        .addItem('👁️ View All', 'viewCertifications')
+        .addItem('➕ Add Certification', 'showAddCertificationModal')
+        .addSeparator()
+        .addItem('⏰ Expiry Alerts', 'checkCertExpiry')
+    )
 
     // ========== INDUSTRIAL TRAINING ==========
-    .addSubMenu(ui.createMenu('⛏️ Industrial Training')
-      .addItem('👁️ View All', 'viewTraining')
-      .addItem('➕ Add Internship', 'showAddTrainingModal')
-      .addItem('⏱️ Track Hours', 'trackTrainingHours'))
+    .addSubMenu(
+      ui
+        .createMenu('⛏️ Industrial Training')
+        .addItem('👁️ View All', 'viewTraining')
+        .addItem('➕ Add Internship', 'showAddTrainingModal')
+        .addItem('⏱️ Track Hours', 'trackTrainingHours')
+    )
 
     // ========== EXPENSES ==========
-    .addSubMenu(ui.createMenu('💰 Finances')
-      .addItem('👁️ View Expenses', 'viewExpenses')
-      .addItem('➕ Add Expense', 'showAddExpenseModal')
-      .addSeparator()
-      .addItem('📊 Spending Analysis', 'spendingAnalysis')
-      .addItem('💵 Fee Structure', 'viewFeeStructure'))
+    .addSubMenu(
+      ui
+        .createMenu('💰 Finances')
+        .addItem('👁️ View Expenses', 'viewExpenses')
+        .addItem('➕ Add Expense', 'showAddExpenseModal')
+        .addSeparator()
+        .addItem('📊 Spending Analysis', 'spendingAnalysis')
+        .addItem('💵 Fee Structure', 'viewFeeStructure')
+    )
 
     // ========== SCHEDULE ==========
-    .addSubMenu(ui.createMenu('📅 Schedule')
-      .addItem('📅 Today', 'showTodaysSchedule')
-      .addItem('📆 This Week', 'showWeeklySchedule')
-      .addItem('📋 Full Timetable', 'viewFullTimetable')
-      .addItem('⏰ Upcoming Deadlines', 'showUpcomingDeadlines')
-      .addSeparator()
-      .addItem('📚 Study Sessions', 'viewStudySessions')
-      .addItem('➕ Add Study Session', 'addStudySession')
-      .addItem('📝 Add Due Date', 'addDueDate'))
+    .addSubMenu(
+      ui
+        .createMenu('📅 Schedule')
+        .addItem('📅 Today', 'showTodaysSchedule')
+        .addItem('📆 This Week', 'showWeeklySchedule')
+        .addItem('📋 Full Timetable', 'viewFullTimetable')
+        .addItem('⏰ Upcoming Deadlines', 'showUpcomingDeadlines')
+        .addSeparator()
+        .addItem('📚 Study Sessions', 'viewStudySessions')
+        .addItem('➕ Add Study Session', 'addStudySession')
+        .addItem('📝 Add Due Date', 'addDueDate')
+    )
 
     // ========== DOCUMENTS ==========
-    .addSubMenu(ui.createMenu('📄 Documents')
-      .addItem('📸 Upload', 'uploadScript')
-      .addItem('📁 Open Drive Folder', 'openFolders')
-      .addItem('🔍 Search', 'searchDocuments'))
+    .addSubMenu(
+      ui
+        .createMenu('📄 Documents')
+        .addItem('📸 Upload', 'uploadScript')
+        .addItem('📁 Open Drive Folder', 'openFolders')
+        .addItem('🔍 Search', 'searchDocuments')
+    )
 
     // ========== REPORTS ==========
-    .addSubMenu(ui.createMenu('📊 Reports')
-      .addItem('📑 Generate Report', 'createUNZAReport')
-      .addItem('📧 Email Report', 'emailProgressReport'))
+    .addSubMenu(
+      ui
+        .createMenu('📊 Reports')
+        .addItem('📑 Generate Report', 'createUNZAReport')
+        .addItem('📧 Email Report', 'emailProgressReport')
+    )
 
     // ========== SYSTEM ==========
     .addSeparator()
-    .addSubMenu(ui.createMenu('⚙️ System')
-      .addItem('🚀 Initialize System', 'initializeCompleteSystem')
-      .addSeparator()
-      .addItem('🧹 Soft Reset', 'softReset')
-      .addItem('💣 Nuke System', 'nukeSystem')
-      .addSeparator()
-      .addItem('👁️ Show All Hidden Tables', 'showHiddenTables')
-      .addItem('👁️‍🗨️ Hide All Database Tables', 'hideDatabaseTables')
-      .addItem('📊 View Table Statistics', 'showNormalizedTables')
-      .addSeparator()
-      .addItem('🔄 Upgrade Students Table', 'upgradeStudentsTable'))
+    .addSubMenu(
+      ui
+        .createMenu('⚙️ System')
+        .addItem('🚀 Initialize System', 'initializeCompleteSystem')
+        .addSeparator()
+        .addItem('🧹 Soft Reset', 'softReset')
+        .addItem('💣 Nuke System', 'nukeSystem')
+        .addSeparator()
+        .addItem('👁️ Show All Hidden Tables', 'showHiddenTables')
+        .addItem('👁️‍🗨️ Hide All Database Tables', 'hideDatabaseTables')
+        .addItem('📊 View Table Statistics', 'showNormalizedTables')
+        .addSeparator()
+        .addItem('🔄 Upgrade Students Table', 'upgradeStudentsTable')
+    )
 
     // ========== TESTING ==========
     .addSeparator()
-    .addSubMenu(ui.createMenu('🧪 Testing')
-      .addItem('🔬 Run All Library Tests', 'runAllLibraryTests')
-      .addItem('👤 Test Profile System', 'testProfileSystem')
-      .addSeparator()
-      .addItem('⚙️ Test Config', 'testConfig')
-      .addItem('🗄️ Test Database', 'testDatabase')
-      .addItem('📊 Test GPA', 'testGPA')
-      .addItem('📚 Test Courses', 'testCourses')
-      .addItem('📝 Test Assessments', 'testAssessments')
-      .addItem('📈 Test Grades', 'testGrades')
-      .addItem('🛡️ Test Certifications', 'testCertifications')
-      .addItem('💰 Test Expenses', 'testExpenses')
-      .addItem('⛏️ Test Training', 'testTraining')
-      .addItem('📅 Test Timetable', 'testTimetable')
-      .addItem('📚 Test Study Sessions', 'testStudySessions')
-      .addItem('⏰ Test Due Dates', 'testDueDates')
-      .addItem('📑 Test Reports', 'testReports')
-      .addItem('⚙️ Test System', 'testSystem')
-      .addItem('🎨 Test UI', 'testUI'))
+    .addSubMenu(
+      ui
+        .createMenu('🧪 Testing')
+        .addItem('🔬 Run All Library Tests', 'runAllLibraryTests')
+        .addItem('👤 Test Profile System', 'testProfileSystem')
+        .addSeparator()
+        .addItem('⚙️ Test Config', 'testConfig')
+        .addItem('🗄️ Test Database', 'testDatabase')
+        .addItem('📊 Test GPA', 'testGPA')
+        .addItem('📚 Test Courses', 'testCourses')
+        .addItem('📝 Test Assessments', 'testAssessments')
+        .addItem('📈 Test Grades', 'testGrades')
+        .addItem('🛡️ Test Certifications', 'testCertifications')
+        .addItem('💰 Test Expenses', 'testExpenses')
+        .addItem('⛏️ Test Training', 'testTraining')
+        .addItem('📅 Test Timetable', 'testTimetable')
+        .addItem('📚 Test Study Sessions', 'testStudySessions')
+        .addItem('⏰ Test Due Dates', 'testDueDates')
+        .addItem('📑 Test Reports', 'testReports')
+        .addItem('⚙️ Test System', 'testSystem')
+        .addItem('🎨 Test UI', 'testUI')
+    )
 
     // ========== VERSION & HELP ==========
     .addSeparator()
@@ -1551,97 +1585,127 @@ function createFullMenu() {
     .addSeparator()
 
     // ========== COURSES ==========
-    .addSubMenu(ui.createMenu('📚 Courses')
-      .addItem('👁️ View All Courses', 'viewAllCourses')
-      .addItem('➕ Add Course', 'showAddCourseModal')
-      .addSeparator()
-      .addItem('📝 View Assessments', 'viewAssessments')
-      .addItem('➕ Add Assessment', 'showAddAssessmentModal')
-      .addItem('📊 Course Progress', 'showCourseProgress'))
+    .addSubMenu(
+      ui
+        .createMenu('📚 Courses')
+        .addItem('👁️ View All Courses', 'viewAllCourses')
+        .addItem('➕ Add Course', 'showAddCourseModal')
+        .addSeparator()
+        .addItem('📝 View Assessments', 'viewAssessments')
+        .addItem('➕ Add Assessment', 'showAddAssessmentModal')
+        .addItem('📊 Course Progress', 'showCourseProgress')
+    )
 
     // ========== GRADES ==========
-    .addSubMenu(ui.createMenu('📊 Grades')
-      .addItem('📈 View My Grades', 'viewGrades')
-      .addItem('✏️ Enter Grades', 'enterGrades'))
+    .addSubMenu(
+      ui
+        .createMenu('📊 Grades')
+        .addItem('📈 View My Grades', 'viewGrades')
+        .addItem('✏️ Enter Grades', 'enterGrades')
+    )
 
     // ========== CERTIFICATIONS ==========
-    .addSubMenu(ui.createMenu('🛡️ Certifications')
-      .addItem('👁️ View All', 'viewCertifications')
-      .addItem('➕ Add Certification', 'showAddCertificationModal')
-      .addSeparator()
-      .addItem('⏰ Expiry Alerts', 'checkCertExpiry'))
+    .addSubMenu(
+      ui
+        .createMenu('🛡️ Certifications')
+        .addItem('👁️ View All', 'viewCertifications')
+        .addItem('➕ Add Certification', 'showAddCertificationModal')
+        .addSeparator()
+        .addItem('⏰ Expiry Alerts', 'checkCertExpiry')
+    )
 
     // ========== INDUSTRIAL TRAINING ==========
-    .addSubMenu(ui.createMenu('⛏️ Industrial Training')
-      .addItem('👁️ View All', 'viewTraining')
-      .addItem('➕ Add Internship', 'showAddTrainingModal')
-      .addItem('⏱️ Track Hours', 'trackTrainingHours'))
+    .addSubMenu(
+      ui
+        .createMenu('⛏️ Industrial Training')
+        .addItem('👁️ View All', 'viewTraining')
+        .addItem('➕ Add Internship', 'showAddTrainingModal')
+        .addItem('⏱️ Track Hours', 'trackTrainingHours')
+    )
 
     // ========== EXPENSES ==========
-    .addSubMenu(ui.createMenu('💰 Finances')
-      .addItem('👁️ View Expenses', 'viewExpenses')
-      .addItem('➕ Add Expense', 'showAddExpenseModal')
-      .addSeparator()
-      .addItem('📊 Spending Analysis', 'spendingAnalysis')
-      .addItem('💵 Fee Structure', 'viewFeeStructure'))
+    .addSubMenu(
+      ui
+        .createMenu('💰 Finances')
+        .addItem('👁️ View Expenses', 'viewExpenses')
+        .addItem('➕ Add Expense', 'showAddExpenseModal')
+        .addSeparator()
+        .addItem('📊 Spending Analysis', 'spendingAnalysis')
+        .addItem('💵 Fee Structure', 'viewFeeStructure')
+    )
 
     // ========== SCHEDULE ==========
-    .addSubMenu(ui.createMenu('📅 Schedule')
-      .addItem('📅 Today', 'showTodaysSchedule')
-      .addItem('📆 This Week', 'showWeeklySchedule')
-      .addItem('📋 Full Timetable', 'viewFullTimetable')
-      .addItem('⏰ Upcoming Deadlines', 'showUpcomingDeadlines')
-      .addSeparator()
-      .addItem('📚 Study Sessions', 'viewStudySessions')
-      .addItem('➕ Add Study Session', 'addStudySession')
-      .addItem('📝 Add Due Date', 'addDueDate'))
+    .addSubMenu(
+      ui
+        .createMenu('📅 Schedule')
+        .addItem('📅 Today', 'showTodaysSchedule')
+        .addItem('📆 This Week', 'showWeeklySchedule')
+        .addItem('📋 Full Timetable', 'viewFullTimetable')
+        .addItem('⏰ Upcoming Deadlines', 'showUpcomingDeadlines')
+        .addSeparator()
+        .addItem('📚 Study Sessions', 'viewStudySessions')
+        .addItem('➕ Add Study Session', 'addStudySession')
+        .addItem('📝 Add Due Date', 'addDueDate')
+    )
 
     // ========== DOCUMENTS ==========
-    .addSubMenu(ui.createMenu('📄 Documents')
-      .addItem('📸 Upload', 'uploadScript')
-      .addItem('📁 Open Drive Folder', 'openFolders')
-      .addItem('🔍 Search', 'searchDocuments'))
+    .addSubMenu(
+      ui
+        .createMenu('📄 Documents')
+        .addItem('📸 Upload', 'uploadScript')
+        .addItem('📁 Open Drive Folder', 'openFolders')
+        .addItem('🔍 Search', 'searchDocuments')
+    )
 
     // ========== REPORTS ==========
-    .addSubMenu(ui.createMenu('📊 Reports')
-      .addItem('📑 Generate Report', 'createUNZAReport')
-      .addItem('📧 Email Report', 'emailProgressReport'))
+    .addSubMenu(
+      ui
+        .createMenu('📊 Reports')
+        .addItem('📑 Generate Report', 'createUNZAReport')
+        .addItem('📧 Email Report', 'emailProgressReport')
+    )
 
     // ========== SYSTEM ==========
     .addSeparator()
-    .addSubMenu(ui.createMenu('⚙️ System')
-      .addItem('🚀 Initialize System', 'initializeCompleteSystem')
-      .addSeparator()
-      .addItem('🧹 Soft Reset', 'softReset')
-      .addItem('💣 Nuke System', 'nukeSystem')
-      .addSeparator()
-      .addItem('👁️ Show All Hidden Tables', 'showHiddenTables')
-      .addItem('👁️‍🗨️ Hide All Database Tables', 'hideDatabaseTables')
-      .addItem('📊 View Table Statistics', 'showNormalizedTables')
-      .addSeparator()
-      .addItem('🔄 Upgrade Students Table', 'upgradeStudentsTable'))
+    .addSubMenu(
+      ui
+        .createMenu('⚙️ System')
+        .addItem('🚀 Initialize System', 'initializeCompleteSystem')
+        .addSeparator()
+        .addItem('🧹 Soft Reset', 'softReset')
+        .addItem('💣 Nuke System', 'nukeSystem')
+        .addSeparator()
+        .addItem('👁️ Show All Hidden Tables', 'showHiddenTables')
+        .addItem('👁️‍🗨️ Hide All Database Tables', 'hideDatabaseTables')
+        .addItem('📊 View Table Statistics', 'showNormalizedTables')
+        .addSeparator()
+        .addItem('🔄 Upgrade Students Table', 'upgradeStudentsTable')
+    )
 
     // ========== TESTING ==========
     .addSeparator()
-    .addSubMenu(ui.createMenu('🧪 Testing')
-      .addItem('🔬 Run All Library Tests', 'runAllLibraryTests')
-      .addItem('👤 Test Profile System', 'testProfileSystem')
-      .addSeparator()
-      .addItem('⚙️ Test Config', 'testConfig')
-      .addItem('🗄️ Test Database', 'testDatabase')
-      .addItem('📊 Test GPA', 'testGPA')
-      .addItem('📚 Test Courses', 'testCourses')
-      .addItem('📝 Test Assessments', 'testAssessments')
-      .addItem('📈 Test Grades', 'testGrades')
-      .addItem('🛡️ Test Certifications', 'testCertifications')
-      .addItem('💰 Test Expenses', 'testExpenses')
-      .addItem('⛏️ Test Training', 'testTraining')
-      .addItem('📅 Test Timetable', 'testTimetable')
-      .addItem('📚 Test Study Sessions', 'testStudySessions')
-      .addItem('⏰ Test Due Dates', 'testDueDates')
-      .addItem('📑 Test Reports', 'testReports')
-      .addItem('⚙️ Test System', 'testSystem')
-      .addItem('🎨 Test UI', 'testUI'))
+    .addSubMenu(
+      ui
+        .createMenu('🧪 Testing')
+        .addItem('🔬 Run All Library Tests', 'runAllLibraryTests')
+        .addItem('👤 Test Profile System', 'testProfileSystem')
+        .addSeparator()
+        .addItem('⚙️ Test Config', 'testConfig')
+        .addItem('🗄️ Test Database', 'testDatabase')
+        .addItem('📊 Test GPA', 'testGPA')
+        .addItem('📚 Test Courses', 'testCourses')
+        .addItem('📝 Test Assessments', 'testAssessments')
+        .addItem('📈 Test Grades', 'testGrades')
+        .addItem('🛡️ Test Certifications', 'testCertifications')
+        .addItem('💰 Test Expenses', 'testExpenses')
+        .addItem('⛏️ Test Training', 'testTraining')
+        .addItem('📅 Test Timetable', 'testTimetable')
+        .addItem('📚 Test Study Sessions', 'testStudySessions')
+        .addItem('⏰ Test Due Dates', 'testDueDates')
+        .addItem('📑 Test Reports', 'testReports')
+        .addItem('⚙️ Test System', 'testSystem')
+        .addItem('🎨 Test UI', 'testUI')
+    )
 
     // ========== VERSION & HELP ==========
     .addSeparator()
@@ -1659,7 +1723,7 @@ function checkLibraryStatus() {
   return {
     connected: true,
     version: typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'unknown',
-    message: `Connected to UNZA Geology Tracker v${APP_VERSION || 'unknown'}`
+    message: `Connected to UNZA Geology Tracker v${APP_VERSION || 'unknown'}`,
   };
 }
 
@@ -1705,6 +1769,7 @@ function showAddExpenseModal() {
     showAlert('Expense functions not loaded', 'error');
   }
 }
+
 
 // FILE: 05_Wrappers.js
 // ==============================================
@@ -7604,9 +7669,9 @@ function testProfileSystem() {
 // 26_TemplateHelpers.gs
 
 // ==============================================
-// TEMPLATE HELPER FUNCTIONS - COMPLETE
+// TEMPLATE HELPER FUNCTIONS - COMPLETE FIXED VERSION
 // All template-side logic moved to library
-// Version: 0.14.1
+// Version: 0.15.0
 // ==============================================
 
 // ==============================================
@@ -7617,12 +7682,12 @@ const TemplateVersion = {
   /**
    * Get version from library
    */
-  getVersion: function() {
+  getVersion: function () {
     if (!GeologyLib) {
-      return { 
-        success: false, 
-        version: "unknown", 
-        message: "Library not loaded" 
+      return {
+        success: false,
+        version: 'unknown',
+        message: 'Library not loaded',
       };
     }
 
@@ -7632,11 +7697,11 @@ const TemplateVersion = {
         const versionInfo = GeologyLib.getVersionInfo();
         const versionMatch = versionInfo.match(/v(\d+\.\d+\.\d+)/);
         if (versionMatch) {
-          return { 
-            success: true, 
+          return {
+            success: true,
             version: versionMatch[1],
             full: versionInfo,
-            method: 'getVersionInfo'
+            method: 'getVersionInfo',
           };
         }
       } catch (e) {
@@ -7646,35 +7711,35 @@ const TemplateVersion = {
 
     // Method 2: Direct APP_VERSION access
     if (GeologyLib.APP_VERSION) {
-      return { 
-        success: true, 
+      return {
+        success: true,
         version: GeologyLib.APP_VERSION,
         full: `UNZA Geology Tracker v${GeologyLib.APP_VERSION}`,
-        method: 'APP_VERSION'
+        method: 'APP_VERSION',
       };
     }
 
     // Method 3: CONFIG access
     if (GeologyLib.CONFIG && GeologyLib.CONFIG.version) {
-      return { 
-        success: true, 
+      return {
+        success: true,
         version: GeologyLib.CONFIG.version,
         full: `UNZA Geology Tracker v${GeologyLib.CONFIG.version}`,
-        method: 'CONFIG'
+        method: 'CONFIG',
       };
     }
 
-    return { 
-      success: false, 
-      version: "unknown", 
-      message: "No version info available" 
+    return {
+      success: false,
+      version: 'unknown',
+      message: 'No version info available',
     };
   },
 
   /**
    * Show version info (combines template and library)
    */
-  showVersion: function() {
+  showVersion: function () {
     const ui = SpreadsheetApp.getUi();
     const libVersion = this.getVersion();
 
@@ -7709,7 +7774,7 @@ const TemplateVersion = {
   /**
    * Check if template and library versions are compatible
    */
-  checkCompatibility: function() {
+  checkCompatibility: function () {
     const libVersion = this.getVersion();
 
     if (!libVersion.success) {
@@ -7717,7 +7782,7 @@ const TemplateVersion = {
         compatible: false,
         message: 'Cannot check compatibility - library not connected',
         libVersion: 'unknown',
-        minRequired: '0.14.0'
+        minRequired: '0.14.0',
       };
     }
 
@@ -7729,11 +7794,12 @@ const TemplateVersion = {
     if (libParts[0] !== minParts[0]) {
       return {
         compatible: libParts[0] > minParts[0],
-        message: libParts[0] > minParts[0] 
-          ? 'Library major version is newer - should be compatible'
-          : 'Library major version is older - may have compatibility issues',
+        message:
+          libParts[0] > minParts[0]
+            ? 'Library major version is newer - should be compatible'
+            : 'Library major version is older - may have compatibility issues',
         libVersion: libVersion.version,
-        minRequired: '0.14.0'
+        minRequired: '0.14.0',
       };
     }
 
@@ -7743,7 +7809,7 @@ const TemplateVersion = {
         compatible: false,
         message: `Library version ${libVersion.version} is older than required 0.14.0 - please update library`,
         libVersion: libVersion.version,
-        minRequired: '0.14.0'
+        minRequired: '0.14.0',
       };
     }
 
@@ -7751,9 +7817,9 @@ const TemplateVersion = {
       compatible: true,
       message: `Library v${libVersion.version} is compatible`,
       libVersion: libVersion.version,
-      minRequired: '0.14.0'
+      minRequired: '0.14.0',
     };
-  }
+  },
 };
 
 // ==============================================
@@ -7767,14 +7833,14 @@ const TEMPLATE_CONSTANTS = {
     WELCOME: '👋 Welcome to UNZA Geology Tracker!',
     NO_LIBRARY: '⚠️ Library not connected. Please check your configuration.',
     INIT_NEEDED: 'Please initialize the system first (System → Initialize System)',
-    LOADING: '⏳ Loading template modules...'
+    LOADING: '⏳ Loading template modules...',
   },
   COLORS: {
     PRIMARY: '#1a73e8',
     SUCCESS: '#0f9d58',
     WARNING: '#f4b400',
-    DANGER: '#d93025'
-  }
+    DANGER: '#d93025',
+  },
 };
 
 // ==============================================
@@ -7785,7 +7851,7 @@ const TemplateUtils = {
   /**
    * Safely call a library function with error handling
    */
-  safeCall: function(functionName, ...args) {
+  safeCall: function (functionName, ...args) {
     try {
       if (!GeologyLib) {
         this.showLibraryNotLoadedError();
@@ -7806,45 +7872,45 @@ const TemplateUtils = {
     }
   },
 
-  showLibraryNotLoadedError: function() {
+  showLibraryNotLoadedError: function () {
     const ui = SpreadsheetApp.getUi();
     ui.alert(
       '⚠️ Library Not Loaded',
       'The Geology Tracker library is not loaded.\n\n' +
-      'Please check:\n' +
-      '1. The library is properly linked\n' +
-      '2. You have proper permissions\n\n' +
-      'Run "Show Library Diagnostic" for details.',
+        'Please check:\n' +
+        '1. The library is properly linked\n' +
+        '2. You have proper permissions\n\n' +
+        'Run "Show Library Diagnostic" for details.',
       ui.ButtonSet.OK
     );
   },
 
-  showFunctionError: function(functionName) {
+  showFunctionError: function (functionName) {
     const ui = SpreadsheetApp.getUi();
     ui.alert(
       '⚠️ Function Not Available',
       `The function "${functionName}" is not available in the library.\n\n` +
-      'This may be due to an outdated library version.\n\n' +
-      'Please contact your administrator.',
+        'This may be due to an outdated library version.\n\n' +
+        'Please contact your administrator.',
       ui.ButtonSet.OK
     );
   },
 
-  showLibraryError: function(functionName, error) {
+  showLibraryError: function (functionName, error) {
     const ui = SpreadsheetApp.getUi();
     ui.alert(
       '⚠️ Library Error',
       `Error calling ${functionName}:\n\n${error.toString()}\n\n` +
-      'Please check your library connection.',
+        'Please check your library connection.',
       ui.ButtonSet.OK
     );
   },
 
-  isLibraryAvailable: function() {
+  isLibraryAvailable: function () {
     return !!(GeologyLib && Object.keys(GeologyLib).length > 0);
   },
 
-  getLibraryStatus: function() {
+  getLibraryStatus: function () {
     if (!GeologyLib) {
       return { connected: false, reason: 'Library object not found' };
     }
@@ -7852,24 +7918,24 @@ const TemplateUtils = {
     try {
       if (typeof GeologyLib.getVersionInfo === 'function') {
         const version = GeologyLib.getVersionInfo();
-        return { 
-          connected: true, 
+        return {
+          connected: true,
           version: version,
-          message: `Connected to ${version}`
+          message: `Connected to ${version}`,
         };
       } else {
-        return { 
-          connected: false, 
-          reason: 'Library functions not accessible' 
+        return {
+          connected: false,
+          reason: 'Library functions not accessible',
         };
       }
     } catch (e) {
-      return { 
-        connected: false, 
-        reason: e.toString() 
+      return {
+        connected: false,
+        reason: e.toString(),
       };
     }
-  }
+  },
 };
 
 // ==============================================
@@ -7877,8 +7943,9 @@ const TemplateUtils = {
 // ==============================================
 
 const TemplateLocal = {
-  viewFeeStructure: function() {
-    const html = HtmlService.createHtmlOutput(`
+  viewFeeStructure: function () {
+    const html = HtmlService.createHtmlOutput(
+      `
       <html>
         <head>
           <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
@@ -7913,19 +7980,23 @@ const TemplateLocal = {
           </div>
         </body>
       </html>
-    `).setWidth(500).setHeight(500);
+    `
+    )
+      .setWidth(500)
+      .setHeight(500);
     SpreadsheetApp.getUi().showModalDialog(html, '💰 Fee Structure');
   },
 
-  showHelp: function() {
+  showHelp: function () {
     const status = TemplateUtils.getLibraryStatus();
-    const statusMessage = status.connected 
-      ? `<span style="color:#0f9d58">✅ ${status.message}</span>` 
+    const statusMessage = status.connected
+      ? `<span style="color:#0f9d58">✅ ${status.message}</span>`
       : `<span style="color:#d93025">❌ Library not connected</span>`;
-    
+
     const version = typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'unknown';
 
-    const html = HtmlService.createHtmlOutput(`
+    const html = HtmlService.createHtmlOutput(
+      `
       <html>
         <head>
           <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
@@ -7985,17 +8056,20 @@ const TemplateLocal = {
           </div>
         </body>
       </html>
-    `).setWidth(500).setHeight(700);
+    `
+    )
+      .setWidth(500)
+      .setHeight(700);
     SpreadsheetApp.getUi().showModalDialog(html, '📋 User Guide');
   },
 
-  showVersion: function() {
+  showVersion: function () {
     const ui = SpreadsheetApp.getUi();
     const status = TemplateUtils.getLibraryStatus();
-    
+
     let message = `📍 UNZA Geology Tracker v${APP_VERSION || 'unknown'}\n\n`;
     message += `Template Version: Thin Client\n\n`;
-    
+
     if (status.connected) {
       message += `✅ ${status.message}`;
     } else {
@@ -8003,7 +8077,7 @@ const TemplateLocal = {
       message += `Reason: ${status.reason || 'Unknown error'}`;
     }
     ui.alert(message);
-  }
+  },
 };
 
 // ==============================================
@@ -8011,31 +8085,31 @@ const TemplateLocal = {
 // ==============================================
 
 const TemplateTests = {
-  runAllTemplateTests: function() {
+  runAllTemplateTests: function () {
     console.log('🔬 STARTING TEMPLATE TEST SUITE');
-    
+
     let results = {
       passed: 0,
       failed: 0,
       total: 0,
-      details: []
+      details: [],
     };
 
     this.testLibraryConnection(results);
     this.testUtils(results);
     this.testVersionConsistency(results);
-    
+
     this.showResults(results);
   },
 
-  testLibraryConnection: function(results) {
+  testLibraryConnection: function (results) {
     console.log('\n🔗 Testing LIBRARY CONNECTION...');
-    
+
     results.total++;
-    
+
     try {
       const status = TemplateUtils.getLibraryStatus();
-      
+
       if (status.connected) {
         console.log(`    ✓ Connected - ${status.message}`);
         results.passed++;
@@ -8050,18 +8124,18 @@ const TemplateTests = {
     }
   },
 
-  testUtils: function(results) {
+  testUtils: function (results) {
     console.log('\n🔧 Testing UTILITY functions...');
     results.total++;
-    
+
     try {
       const utilFunctions = ['safeCall', 'isLibraryAvailable', 'getLibraryStatus'];
       let workingCount = 0;
-      
-      utilFunctions.forEach(f => {
+
+      utilFunctions.forEach((f) => {
         if (typeof TemplateUtils[f] === 'function') workingCount++;
       });
-      
+
       if (workingCount === utilFunctions.length) {
         console.log(`    ✓ All utilities available`);
         results.passed++;
@@ -8076,13 +8150,13 @@ const TemplateTests = {
     }
   },
 
-  testVersionConsistency: function(results) {
+  testVersionConsistency: function (results) {
     console.log('\n📌 Testing VERSION consistency...');
     results.total++;
-    
+
     try {
       const status = TemplateUtils.getLibraryStatus();
-      
+
       if (status.connected) {
         console.log(`    ✓ Library connected`);
         results.passed++;
@@ -8098,29 +8172,29 @@ const TemplateTests = {
     }
   },
 
-  showResults: function(results) {
+  showResults: function (results) {
     const ui = SpreadsheetApp.getUi();
-    
+
     const percentage = results.total > 0 ? Math.round((results.passed / results.total) * 100) : 0;
-    
+
     const barLength = 30;
     const filled = Math.round((percentage / 100) * barLength);
     const bar = '█'.repeat(filled) + '░'.repeat(barLength - filled);
-    
+
     let message = `📋 TEMPLATE TEST RESULTS\n\n`;
     message += `${bar} ${percentage}%\n\n`;
     message += `✅ Passed: ${results.passed}\n`;
     message += `❌ Failed: ${results.failed}\n`;
     message += `📊 Total:  ${results.total}\n\n`;
-    
-    const failed = results.details.filter(d => d.includes('❌'));
+
+    const failed = results.details.filter((d) => d.includes('❌'));
     if (failed.length > 0) {
       message += '🔴 FAILED:\n';
-      failed.forEach(f => message += f + '\n');
+      failed.forEach((f) => (message += f + '\n'));
     }
-    
+
     ui.alert(message);
-  }
+  },
 };
 
 // ==============================================
@@ -8128,23 +8202,23 @@ const TemplateTests = {
 // ==============================================
 
 const LibraryChecker = {
-  checkStatus: function() {
+  checkStatus: function () {
     console.log('🔍 Checking library status...');
-    
+
     const result = {
       libraryExists: typeof GeologyLib !== 'undefined',
       libraryType: typeof GeologyLib,
       isObject: GeologyLib !== null && typeof GeologyLib === 'object',
       functionCount: 0,
-      version: null
+      version: null,
     };
 
     if (result.libraryExists && result.isObject) {
       try {
         result.functionCount = Object.keys(GeologyLib).filter(
-          key => typeof GeologyLib[key] === 'function'
+          (key) => typeof GeologyLib[key] === 'function'
         ).length;
-        
+
         if (typeof GeologyLib.getVersionInfo === 'function') {
           result.version = GeologyLib.getVersionInfo();
         }
@@ -8156,40 +8230,40 @@ const LibraryChecker = {
     return result;
   },
 
-  forceReload: function() {
+  forceReload: function () {
     console.log('🔄 Forcing library reload...');
     const status = this.checkStatus();
-    
+
     if (status.libraryExists && status.isObject) {
       console.log(`✅ Library found with ${status.functionCount} functions`);
       if (status.version) console.log(`📚 Version: ${status.version}`);
     }
-    
+
     return status;
   },
 
-  showStatus: function() {
+  showStatus: function () {
     const ui = SpreadsheetApp.getUi();
     const status = this.forceReload();
-    
+
     let message = '🔍 LIBRARY CONNECTION DIAGNOSTIC\n\n';
     message += `📚 Library exists: ${status.libraryExists ? '✅ YES' : '❌ NO'}\n`;
-    
+
     if (status.libraryExists) {
       message += `📦 Type: ${status.libraryType}\n`;
       message += `🔧 Is object: ${status.isObject ? '✅ YES' : '❌ NO'}\n`;
-      
+
       if (status.isObject) {
         message += `\n📋 FUNCTIONS:\n`;
         message += `  • Total functions: ${status.functionCount}\n`;
-        
+
         if (status.version) {
           message += `\n🔢 VERSION:\n`;
           message += `  • ${status.version}\n`;
         }
       }
     }
-    
+
     message += `\n📌 RECOMMENDATIONS:\n`;
     if (!status.libraryExists) {
       message += `  • Add library in Apps Script → Libraries\n`;
@@ -8203,24 +8277,24 @@ const LibraryChecker = {
     } else {
       message += `  • ✅ Library is properly connected!\n`;
     }
-    
+
     ui.alert(message);
   },
 
-  quickFix: function() {
+  quickFix: function () {
     const ui = SpreadsheetApp.getUi();
     const status = this.checkStatus();
-    
+
     if (!status.libraryExists) {
       ui.alert(
         '❌ Cannot Fix Automatically',
         'Please add the library manually:\n\n' +
-        '1. Go to Extensions → Apps Script\n' +
-        '2. Click "Libraries" in left sidebar\n' +
-        '3. Add Library ID: 1cCt4YE5RJn0Ow4vDExwJ5VcASWW-UfgiIFBQt5eFk0dxnU4yP3LKBpx2\n' +
-        '4. Set Identifier to: GeologyLib\n' +
-        '5. Select the latest version\n' +
-        '6. Click Add',
+          '1. Go to Extensions → Apps Script\n' +
+          '2. Click "Libraries" in left sidebar\n' +
+          '3. Add Library ID: 1cCt4YE5RJn0Ow4vDExwJ5VcASWW-UfgiIFBQt5eFk0dxnU4yP3LKBpx2\n' +
+          '4. Set Identifier to: GeologyLib\n' +
+          '5. Select the latest version\n' +
+          '6. Click Add',
         ui.ButtonSet.OK
       );
     } else {
@@ -8230,29 +8304,293 @@ const LibraryChecker = {
         ui.ButtonSet.OK
       );
     }
-  }
+  },
 };
 
 // ==============================================
-// GLOBAL FUNCTIONS - Export everything
+// GLOBAL WRAPPER FUNCTIONS - Connects template to library
+// These make ALL library functions available to the thin template
+// ==============================================
+
+// Dashboard & GPA
+function showUNZADashboard() { 
+  if (typeof showUNZADashboard === 'function') return showUNZADashboard();
+  throw new Error('Dashboard functions not available');
+}
+
+function showGPADetails() { 
+  if (typeof showGPADetails === 'function') return showGPADetails();
+  throw new Error('GPA functions not available');
+}
+
+function showProfileEditor() { 
+  if (typeof ProfileManager !== 'undefined' && typeof ProfileManager.showProfileEditor === 'function') {
+    return ProfileManager.showProfileEditor();
+  }
+  throw new Error('Profile editor not available');
+}
+
+function viewProfile() { 
+  if (typeof ProfileManager !== 'undefined' && typeof ProfileManager.viewProfile === 'function') {
+    return ProfileManager.viewProfile();
+  }
+  throw new Error('Profile viewer not available');
+}
+
+function showProgramRequirements() { 
+  if (typeof showProgramRequirements === 'function') return showProgramRequirements();
+  throw new Error('Program requirements not available');
+}
+
+function checkGraduationReadiness() { 
+  if (typeof checkGraduationReadiness === 'function') return checkGraduationReadiness();
+  throw new Error('Graduation check not available');
+}
+
+// Courses
+function viewAllCourses() { 
+  if (typeof viewAllCourses === 'function') return viewAllCourses();
+  throw new Error('Courses view not available');
+}
+
+function addCourse() { 
+  if (typeof addCourse === 'function') return addCourse();
+  throw new Error('Add course not available');
+}
+
+function viewAssessments() { 
+  if (typeof viewAssessments === 'function') return viewAssessments();
+  throw new Error('Assessments view not available');
+}
+
+function addAssessment() { 
+  if (typeof addAssessment === 'function') return addAssessment();
+  throw new Error('Add assessment not available');
+}
+
+function showCourseProgress() { 
+  if (typeof showCourseProgress === 'function') return showCourseProgress();
+  throw new Error('Course progress not available');
+}
+
+// Grades
+function viewGrades() { 
+  if (typeof viewGrades === 'function') return viewGrades();
+  throw new Error('Grades view not available');
+}
+
+function enterGrades() { 
+  if (typeof enterGrades === 'function') return enterGrades();
+  throw new Error('Enter grades not available');
+}
+
+// Certifications
+function viewCertifications() { 
+  if (typeof viewCertifications === 'function') return viewCertifications();
+  throw new Error('Certifications view not available');
+}
+
+function addCertification() { 
+  if (typeof addCertification === 'function') return addCertification();
+  throw new Error('Add certification not available');
+}
+
+function checkCertExpiry() { 
+  if (typeof checkCertExpiry === 'function') return checkCertExpiry();
+  throw new Error('Check certificate expiry not available');
+}
+
+// Training
+function viewTraining() { 
+  if (typeof viewTraining === 'function') return viewTraining();
+  throw new Error('Training view not available');
+}
+
+function addTraining() { 
+  if (typeof addTraining === 'function') return addTraining();
+  throw new Error('Add training not available');
+}
+
+function trackTrainingHours() { 
+  if (typeof trackTrainingHours === 'function') return trackTrainingHours();
+  throw new Error('Track training hours not available');
+}
+
+// Expenses
+function viewExpenses() { 
+  if (typeof viewExpenses === 'function') return viewExpenses();
+  throw new Error('Expenses view not available');
+}
+
+function addExpense() { 
+  if (typeof addExpense === 'function') return addExpense();
+  throw new Error('Add expense not available');
+}
+
+function spendingAnalysis() { 
+  if (typeof spendingAnalysis === 'function') return spendingAnalysis();
+  throw new Error('Spending analysis not available');
+}
+
+function viewFeeStructure() { 
+  return TemplateLocal.viewFeeStructure();
+}
+
+// Schedule
+function showTodaysSchedule() { 
+  if (typeof showTodaysSchedule === 'function') return showTodaysSchedule();
+  throw new Error('Today\'s schedule not available');
+}
+
+function showWeeklySchedule() { 
+  if (typeof showWeeklySchedule === 'function') return showWeeklySchedule();
+  throw new Error('Weekly schedule not available');
+}
+
+function viewFullTimetable() { 
+  if (typeof viewFullTimetable === 'function') return viewFullTimetable();
+  throw new Error('Full timetable not available');
+}
+
+function showUpcomingDeadlines() { 
+  if (typeof showUpcomingDeadlines === 'function') return showUpcomingDeadlines();
+  throw new Error('Upcoming deadlines not available');
+}
+
+function viewStudySessions() { 
+  if (typeof viewStudySessions === 'function') return viewStudySessions();
+  throw new Error('Study sessions not available');
+}
+
+function addStudySession() { 
+  if (typeof addStudySession === 'function') return addStudySession();
+  throw new Error('Add study session not available');
+}
+
+function addDueDate() { 
+  if (typeof addDueDate === 'function') return addDueDate();
+  throw new Error('Add due date not available');
+}
+
+// Documents
+function uploadScript() { 
+  if (typeof uploadScript === 'function') return uploadScript();
+  throw new Error('Upload script not available');
+}
+
+function openFolders() { 
+  if (typeof openFolders === 'function') return openFolders();
+  throw new Error('Open folders not available');
+}
+
+function searchDocuments() { 
+  if (typeof searchDocuments === 'function') return searchDocuments();
+  throw new Error('Search documents not available');
+}
+
+// Reports
+function createUNZAReport() { 
+  if (typeof createUNZAReport === 'function') return createUNZAReport();
+  throw new Error('Create report not available');
+}
+
+function emailProgressReport() { 
+  if (typeof emailProgressReport === 'function') return emailProgressReport();
+  throw new Error('Email progress report not available');
+}
+
+// System
+function initializeCompleteSystem() { 
+  if (typeof initializeCompleteSystem === 'function') return initializeCompleteSystem();
+  throw new Error('Initialize system not available');
+}
+
+function softReset() { 
+  if (typeof softReset === 'function') return softReset();
+  throw new Error('Soft reset not available');
+}
+
+function nukeSystem() { 
+  if (typeof nukeSystem === 'function') return nukeSystem();
+  throw new Error('Nuke system not available');
+}
+
+function showHiddenTables() { 
+  if (typeof showHiddenTables === 'function') return showHiddenTables();
+  throw new Error('Show hidden tables not available');
+}
+
+function hideDatabaseTables() { 
+  if (typeof hideDatabaseTables === 'function') return hideDatabaseTables();
+  throw new Error('Hide database tables not available');
+}
+
+function showNormalizedTables() { 
+  if (typeof showNormalizedTables === 'function') return showNormalizedTables();
+  throw new Error('Show normalized tables not available');
+}
+
+function upgradeStudentsTable() { 
+  if (typeof upgradeStudentsTable === 'function') return upgradeStudentsTable();
+  throw new Error('Upgrade students table not available');
+}
+
+// ==============================================
+// EXPORTED HELPER FUNCTIONS
 // ==============================================
 
 // Version functions
-function showVersion() { TemplateVersion.showVersion(); }
-function checkVersionCompatibility() { TemplateVersion.checkCompatibility(); }
+function showVersion() {
+  TemplateVersion.showVersion();
+}
 
-// Local functions
-function viewFeeStructure() { TemplateLocal.viewFeeStructure(); }
-function showHelp() { TemplateLocal.showHelp(); }
+function checkVersionCompatibility() {
+  return TemplateVersion.checkCompatibility();
+}
+
+// Help functions
+function showHelp() {
+  TemplateLocal.showHelp();
+}
 
 // Test functions
-function testLibraryConnection() { TemplateTests.testLibraryConnection(); }
-function runAllTemplateTests() { TemplateTests.runAllTemplateTests(); }
+function testLibraryConnection() {
+  TemplateTests.testLibraryConnection();
+}
+
+function runAllTemplateTests() {
+  TemplateTests.runAllTemplateTests();
+}
 
 // Library checker functions
-function showLibraryDiagnostic() { LibraryChecker.showStatus(); }
-function fixLibraryConnection() { LibraryChecker.quickFix(); }
-function forceLibraryReload() { LibraryChecker.forceReload(); }
+function showLibraryDiagnostic() {
+  LibraryChecker.showStatus();
+}
+
+function fixLibraryConnection() {
+  LibraryChecker.quickFix();
+}
+
+function forceLibraryReload() {
+  LibraryChecker.forceReload();
+}
+
+// Debug function
+function debugAvailableFunctions() {
+  const functions = {
+    showUNZADashboard: typeof showUNZADashboard === 'function',
+    showGPADetails: typeof showGPADetails === 'function',
+    showProfileEditor: typeof ProfileManager?.showProfileEditor === 'function',
+    viewProfile: typeof ProfileManager?.viewProfile === 'function',
+    calculateUNGPA: typeof calculateUNGPA === 'function',
+    showProgramRequirements: typeof showProgramRequirements === 'function',
+    checkGraduationReadiness: typeof checkGraduationReadiness === 'function',
+    viewAllCourses: typeof viewAllCourses === 'function',
+    addCourse: typeof addCourse === 'function',
+  };
+  console.log('📊 Available functions:', functions);
+  return functions;
+}
 
 console.log('✅ Template helpers loaded successfully');
 
