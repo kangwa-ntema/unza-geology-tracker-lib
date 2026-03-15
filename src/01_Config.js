@@ -9,7 +9,7 @@
 // VERSION CONTROL - COMPLETE HISTORY v0.9.0 to v0.14.0
 // ==============================================
 
-const APP_VERSION = '0.14.1';
+const APP_VERSION = '0.15.0';
 const VERSION_HISTORY = {
   // Initial versions
   '0.9.0': 'Initial complete system with 14 sheets',
