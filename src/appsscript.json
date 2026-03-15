@@ -1,0 +1,6 @@
+{
+  "timeZone": "Africa/Maputo",
+  "dependencies": {},
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8"
+}

@@ -1,0 +1,34 @@
+{
+  "name": "unza_geology_lib",
+  "version": "1.0.0",
+  "description": "Core library for UNZA Geology Tracker",
+  "main": "index.js",
+  "scripts": {
+    "push": "clasp push",
+    "pull": "clasp pull",
+    "open": "clasp open",
+    "deploy": "clasp deploy",
+    "versions": "clasp versions",
+    "logs": "clasp logs",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write src/",
+    "test": "echo 'Run tests from spreadsheet menu'",
+    "prepare": "husky install"
+  },
+  "keywords": [
+    "google-apps-script",
+    "unza",
+    "geology",
+    "education"
+  ],
+  "author": "kangwa-ntema",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/google-apps-script": "^2.0.8",
+    "eslint": "^10.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "prettier": "^3.8.1"
+  }
+}

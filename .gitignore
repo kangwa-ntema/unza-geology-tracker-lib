@@ -1,0 +1,28 @@
+# clasp secrets
+.clasp.json
+.clasprc.json
+.clasprc.json.example
+
+# dependencies
+node_modules/
+
+# build outputs
+dist/
+build/
+
+# logs
+*.log
+npm-debug.log*
+
+# environment
+.env
+.env.local
+
+# IDE (except shared settings)
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# OS files
+.DS_Store
+Thumbs.db
