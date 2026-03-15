@@ -2,6 +2,7 @@
 .clasp.json
 .clasprc.json
 .clasprc.json.example
+.clasp.json.example
 
 # dependencies
 node_modules/
