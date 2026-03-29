@@ -6,6 +6,18 @@
 // Version: 0.14.1
 // ==============================================
 
+// ==============================================
+// IMPORT TEMPLATE HELPERS - FIXED VERSION
+// ==============================================
+
+// Use var instead of const for hoisting safety
+var TemplateVersion = typeof TemplateVersion !== 'undefined' ? TemplateVersion : null;
+var TEMPLATE_CONSTANTS = typeof TEMPLATE_CONSTANTS !== 'undefined' ? TEMPLATE_CONSTANTS : null;
+var TemplateUtils = typeof TemplateUtils !== 'undefined' ? TemplateUtils : null;
+var TemplateLocal = typeof TemplateLocal !== 'undefined' ? TemplateLocal : null;
+var TemplateTests = typeof TemplateTests !== 'undefined' ? TemplateTests : null;
+var LibraryChecker = typeof LibraryChecker !== 'undefined' ? LibraryChecker : null;
+
 /**
  * Original onOpen function - keeps backward compatibility
  */
@@ -357,202 +369,10 @@ function showAddExpenseModal() {
   }
 }
 
-// ==============================================
-// EXPORT ALL FUNCTIONS TO GEOLOGYLIB OBJECT
-// Add this at the VERY END of 04_Menu.js
-// ==============================================
-
-// Create a single export object with all library functions
-const GeologyLib = {
-  // Version
-  getVersionInfo,
-  showVersion,
-  viewChangelog,
-  viewFullChangelog,
-  addChangelogEntryPrompt,
-  addChangelogEntry,
-  setupChangelogSheet,
-  versionCompare,
-  
-  // Init
-  initializeCompleteSystem,
-  upgradeStudentsTable,
-  
-  // Menu
-  onOpen,
-  createFullMenu,
-  checkLibraryStatus,
-  
-  // Wrappers
-  showAddCourseModal,
-  showAddAssessmentModal,
-  showAddCertificationModal,
-  showAddTrainingModal,
-  showAddExpenseModal,
-  viewFeeStructure,
-  
-  // GPA
-  calculateUNGPA,
-  calculateNormalizedGPA,
-  percentageToGradePoint,
-  calculateLegacyGPA,
-  showGPADetails,
-  
-  // Program Requirements
-  showProgramRequirements,
-  showDetailedRequirements,
-  checkCategoryRequirement,
-  getRequirementsSummary,
-  calculateUNZAProgress,
-  getDefaultProgress,
-  
-  // Courses
-  viewAllCourses,
-  showAddCourseModal,
-  saveCourse,
-  showEditCourseModal,
-  updateCourse,
-  deleteCourse,
-  showCourseProgress,
-  getAllCourses,
-  calculateCourseCA,
-  
-  // Assessments
-  viewAssessments,
-  showAddAssessmentModal,
-  saveAssessment,
-  deleteAssessment,
-  
-  // Grades
-  enterGrades,
-  getAssessmentDetails,
-  saveGrade,
-  viewGrades,
-  
-  // Certifications
-  viewCertifications,
-  showAddCertificationModal,
-  saveCertification,
-  deleteCertification,
-  checkCertExpiry,
-  
-  // Expenses
-  viewExpenses,
-  showAddExpenseModal,
-  saveExpense,
-  deleteExpense,
-  spendingAnalysis,
-  
-  // Timetable
-  showTodaysSchedule,
-  showWeeklySchedule,
-  viewFullTimetable,
-  getCourseCode,
-  
-  // Study Sessions
-  viewStudySessions,
-  addStudySession,
-  saveStudySession,
-  markStudySessionCompleted,
-  deleteStudySession,
-  showStudyStats,
-  getWeeklyStudySummary,
-  
-  // Due Dates
-  showUpcomingDeadlines,
-  addDueDate,
-  saveDueDate,
-  
-  // Training
-  viewTraining,
-  showAddTrainingModal,
-  saveTraining,
-  trackTrainingHours,
-  deleteTraining,
-  
-  // Dashboard
-  showUNZADashboard,
-  getMotivationalMessage,
-  createProgressBar,
-  getCourseCount,
-  getAssessmentCount,
-  getGradeCount,
-  
-  // Reports
-  createUNZAReport,
-  emailProgressReport,
-  checkGraduationReadiness,
-  
-  // Documents
-  uploadScript,
-  openFolders,
-  searchDocuments,
-  
-  // System Resets
-  nukeSystem,
-  softReset,
-  clearNormalizedData,
-  
-  // Normalized Sheets
-  showNormalizedTables,
-  showHiddenTables,
-  hideDatabaseTables,
-  
-  // UI Helpers
-  showModal,
-  showToast,
-  showAlert,
-  showConfirm,
-  getBaseHTML,
-  showHelp,
-  
-  // Tests
-  testGPA,
-  testProgress,
-  testProfile,
-  runAllLibraryTests,
-  testConfig,
-  testDatabase,
-  testGPA,
-  testCourses,
-  testAssessments,
-  testGrades,
-  testCertifications,
-  testExpenses,
-  testTraining,
-  testTimetable,
-  testStudySessions,
-  testDueDates,
-  testReports,
-  testSystem,
-  testUI,
-  
-  // Profile
-  showProfileEditor,
-  viewProfile,
-  updateProfile,
-  getProfileSummary,
-  testProfileSystem,
-  
-  // Template Helpers
-  TemplateVersion,
-  TEMPLATE_CONSTANTS,
-  TemplateUtils,
-  TemplateLocal,
-  TemplateTests,
-  LibraryChecker,
-  showVersion,
-  checkVersionCompatibility,
-  showHelp,
-  testLibraryConnection,
-  runAllTemplateTests,
-  showLibraryDiagnostic,
-  fixLibraryConnection,
-  forceLibraryReload,
-  debugAvailableFunctions
-};
-
-// Make it globally available
-this.GeologyLib = GeologyLib;
-
-console.log('✅ GeologyLib exported with', Object.keys(GeologyLib).length, 'functions');
+function viewFeeStructure() {
+  if (typeof TemplateLocal !== 'undefined' && TemplateLocal.viewFeeStructure) {
+    TemplateLocal.viewFeeStructure();
+  } else {
+    showAlert('Fee structure function not available', 'error');
+  }
+}

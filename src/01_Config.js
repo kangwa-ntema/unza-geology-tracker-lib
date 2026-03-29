@@ -9,7 +9,7 @@
 // VERSION CONTROL - COMPLETE HISTORY v0.9.0 to v0.14.0
 // ==============================================
 
-const APP_VERSION = '0.15.0';
+const APP_VERSION = '0.15.5';
 const VERSION_HISTORY = {
   // Initial versions
   '0.9.0': 'Initial complete system with 14 sheets',
@@ -62,35 +62,19 @@ const VERSION_HISTORY = {
   // 🏛️ THIN TEMPLATE ARCHITECTURE
   '0.15.0':
     'THIN TEMPLATE MIGRATION: Moved all template-side logic (VersionSync, Constants, Utils, LocalFunctions, Tests, LibraryChecker) into library as 26_TemplateHelpers.js; Template now reduced to single ultra-thin file; Updates now propagate automatically to all users; Professional enterprise architecture achieved',
+
+  // 🐛 CONNECTION FIXES
+  '0.15.1':
+    'FIXED:.Template-library connection issues - Added GeologyLib export object with ALL functions; Fixed recursive wrapper functions; Resolved "is not a function" errors; Template now properly calls library methods via GeologyLib namespace; Complete thin template architecture now fully functional',
+  '0.15.2':
+    'FIXED: Critical hoisting error in 04_Menu.js - Changed const to var for template helper declarations to prevent "Cannot access before initialization" error; Menu now appears correctly; All export references now safely handled',
+  '0.15.3':
+    'FIXED: Library export timing issue - Moved GeologyLib export to dedicated 99_Exports.js file to ensure all functions are defined before export; Added guard in 26_TemplateHelpers.js for GeologyLib reference; Library now properly exports all 130+ functions; Template receives complete library object with no empty warnings',
+  '0.15.4':
+    'FIXED: Recursive wrapper functions in 26_TemplateHelpers.js - All global wrapper functions now properly call GeologyLib methods instead of themselves; Added proper null checks and error handling; Fixed infinite recursion causing stack overflow errors; All menu functions now work correctly; Added showLibraryError helper function for consistent error messages',
+  '0.15.5':
+    'CLEANUP: Removed duplicate global wrapper functions from 26_TemplateHelpers.js that were causing infinite recursion with thin template; Library now properly exports only core helper objects and functions; Architecture now clean with clear separation between thin template, helper objects, and library exports; All menu functions now execute without stack overflow errors',
 };
-
-function getVersionInfo() {
-  return `UNZA Geology Tracker v${APP_VERSION}`;
-}
-
-function showVersion() {
-  const ui = SpreadsheetApp.getUi();
-  let message = `📍 UNZA Geology Tracker v${APP_VERSION}\n\n`;
-
-  if (VERSION_HISTORY && VERSION_HISTORY[APP_VERSION]) {
-    message += `📌 Current: ${VERSION_HISTORY[APP_VERSION]}`;
-  }
-
-  // Show architecture info
-  message += `\n\n🏗️ Architecture: Template/Library Split (v0.13.1+)`;
-
-  // Add profile system info if available
-  if (typeof ProfileManager !== 'undefined') {
-    try {
-      const profile = ProfileManager.getProfileSummary();
-      message += `\n\n👤 ${profile.shortDisplay}`;
-    } catch (e) {
-      // Profile not set up yet
-    }
-  }
-
-  ui.alert(message);
-}
 
 function viewChangelog() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();

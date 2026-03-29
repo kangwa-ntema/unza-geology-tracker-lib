@@ -35,6 +35,13 @@ const INIT_CONFIG = {
  * COMPLETE SYSTEM INITIALIZATION
  */
 function initializeCompleteSystem(includeDemoData) {
+  try {
+    const test = SpreadsheetApp.getUi();
+  } catch (e) {
+    console.log('initializeCompleteSystem called during script load - skipping');
+    return;
+  }
+
   const ui = SpreadsheetApp.getUi();
 
   if (includeDemoData === undefined) {

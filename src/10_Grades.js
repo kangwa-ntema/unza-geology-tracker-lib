@@ -135,16 +135,35 @@ function enterGrades() {
 function getAssessmentDetails(assessmentId) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName('_assessments');
+  const coursesSheet = ss.getSheetByName('_courses');
+
+  if (!sheet) return { maxScore: 100, name: 'Unknown', courseCode: 'Unknown' };
 
   const data = sheet.getDataRange().getValues();
   for (let i = 1; i < data.length; i++) {
     if (data[i][0] === assessmentId) {
+      // Get course info
+      let courseCode = 'Unknown';
+      if (coursesSheet) {
+        const courses = coursesSheet.getDataRange().getValues();
+        for (let j = 1; j < courses.length; j++) {
+          if (courses[j][0] === data[i][1]) {
+            courseCode = courses[j][1];
+            break;
+          }
+        }
+      }
+
       return {
         maxScore: data[i][5],
+        name: data[i][3],
+        courseCode: courseCode,
+        weight: data[i][4],
+        dueDate: data[i][6],
       };
     }
   }
-  return { maxScore: 100 };
+  return { maxScore: 100, name: 'Unknown', courseCode: 'Unknown' };
 }
 
 function saveGrade(data) {

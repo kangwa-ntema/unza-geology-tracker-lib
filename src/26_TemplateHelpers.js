@@ -1,19 +1,34 @@
 // 26_TemplateHelpers.gs
 
+// 26_TemplateHelpers.gs
+
 // ==============================================
 // TEMPLATE HELPER FUNCTIONS - COMPLETE FIXED VERSION
 // All template-side logic moved to library
-// Version: 0.15.0
+// Version: 0.15.5
 // ==============================================
 
 // ==============================================
-// VERSION SYNC HELPERS (from template 02_VersionSync.js)
+// INITIALIZATION - Create empty objects FIRST
 // ==============================================
 
-const TemplateVersion = {
-  /**
-   * Get version from library
-   */
+if (typeof GeologyLib === 'undefined') {
+  var GeologyLib = {};
+}
+
+// Initialize ALL template objects as empty objects FIRST
+var TemplateVersion = {};
+var TEMPLATE_CONSTANTS = {};
+var TemplateUtils = {};
+var TemplateLocal = {};
+var TemplateTests = {};
+var LibraryChecker = {};
+
+// ==============================================
+// VERSION SYNC HELPERS
+// ==============================================
+
+TemplateVersion = {
   getVersion: function () {
     if (!GeologyLib) {
       return {
@@ -146,7 +161,7 @@ const TemplateVersion = {
 // CONSTANTS
 // ==============================================
 
-const TEMPLATE_CONSTANTS = {
+TEMPLATE_CONSTANTS = {
   SUPPORT_EMAIL: 'support@unza.edu.zm',
   DOCS_URL: 'https://unza.edu.zm/geology-tracker',
   MESSAGES: {
@@ -167,7 +182,7 @@ const TEMPLATE_CONSTANTS = {
 // UTILITY FUNCTIONS
 // ==============================================
 
-const TemplateUtils = {
+TemplateUtils = {
   safeCall: function (functionName, ...args) {
     try {
       if (!GeologyLib) {
@@ -259,44 +274,48 @@ const TemplateUtils = {
 // LOCAL FUNCTIONS
 // ==============================================
 
-const TemplateLocal = {
+TemplateLocal = {
   viewFeeStructure: function () {
-    const html = HtmlService.createHtmlOutput(`
-      <html>
-        <head>
-          <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
-          <style>
-            body { font-family: 'Google Sans', sans-serif; padding: 20px; }
-            .fee-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            .fee-table th { text-align: left; padding: 12px; background: #f8f9fa; }
-            .fee-table td { padding: 12px; border-bottom: 1px solid #dadce0; }
-          </style>
-        </head>
-        <body>
-          <h3 style="color:#1a73e8">UNZA SCHOOL OF MINES - FEE STRUCTURE</h3>
-          <h4>A. Zambian Students</h4>
-          <table class="fee-table">
+    const html = HtmlService.createHtmlOutput(
+      `
+    <html>
+      <head>
+        <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+        <style>
+          body { font-family: 'Google Sans', sans-serif; padding: 20px; }
+          .fee-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          .fee-table th { text-align: left; padding: 12px; background: #f8f9fa; }
+          .fee-table td { padding: 12px; border-bottom: 1px solid #dadce0; }
+        </style>
+      </head>
+      <body>
+        <h3 style="color:#1a73e8">UNZA SCHOOL OF MINES - FEE STRUCTURE</h3>
+        <h4>A. Zambian Students</h4>
+        <table class="fee-table">
             <tr><th>Programme</th><th>Tuition per Year</th></tr>
             <tr><td>Science-Based</td><td><strong>K31,878.00</strong></td></tr>
-          </table>
-          <h4>B. International Students</h4>
-          <table class="fee-table">
+        </table>
+        <h4>B. International Students</h4>
+        <table class="fee-table">
             <tr><th>Programme</th><th>Tuition per Year</th></tr>
             <tr><td>Science-Based</td><td><strong>K62,890.00</strong></td></tr>
-          </table>
-          <h4>C. Other Fees</h4>
-          <table class="fee-table">
+        </table>
+        <h4>C. Other Fees</h4>
+        <table class="fee-table">
             <tr><th>Fee Type</th><th>Amount</th><th>Period</th></tr>
             <tr><td>Registration</td><td>K40.00</td><td>Per Year</td></tr>
             <tr><td>Examination</td><td>K50.00</td><td>Per Course</td></tr>
             <tr><td>Medical</td><td>K200.00</td><td>Per Year</td></tr>
-          </table>
-          <div style="margin-top: 20px;">
-            <button class="btn btn-primary" onclick="google.script.host.close()">Close</button>
-          </div>
-        </body>
-      </html>
-    `).setWidth(500).setHeight(500);
+        </table>
+        <div style="margin-top: 20px;">
+          <button class="btn btn-primary" onclick="google.script.host.close()">Close</button>
+        </div>
+      </body>
+    </html>
+    `
+    )
+      .setWidth(500)
+      .setHeight(500);
     SpreadsheetApp.getUi().showModalDialog(html, '💰 Fee Structure');
   },
 
@@ -308,67 +327,71 @@ const TemplateLocal = {
 
     const version = typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'unknown';
 
-    const html = HtmlService.createHtmlOutput(`
-      <html>
-        <head>
-          <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
-          <style>
-            body { font-family: 'Google Sans', sans-serif; padding: 20px; }
-            .step { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; }
-            .version-badge { 
-              background: #1a73e8; 
-              color: white; 
-              padding: 4px 12px; 
-              border-radius: 16px;
-              display: inline-block;
-              font-size: 14px;
-            }
-            .status { margin: 10px 0; padding: 10px; border-radius: 4px; }
-          </style>
-        </head>
-        <body>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 style="color:#1a73e8; margin:0">📋 UNZA Geology Tracker</h3>
-            <span class="version-badge">v${version}</span>
-          </div>
-          <div class="status">${statusMessage}</div>
-          <div class="step">
-            <h4>🚀 Getting Started</h4>
-            <p>1. Go to <strong>System → Initialize System</strong> to set up your database</p>
-            <p>2. Add your courses under <strong>Courses → Add Course</strong></p>
-            <p>3. Add assessments under <strong>Courses → Add Assessment</strong></p>
-            <p>4. Enter your grades under <strong>Grades → Enter Grades</strong></p>
-          </div>
-          <div class="step">
-            <h4>📊 Tracking Progress</h4>
-            <p>• View your GPA anytime from the Dashboard</p>
-            <p>• Check graduation requirements under Graduation Status</p>
-            <p>• Track expenses, certifications, and industrial training</p>
-          </div>
-          <div class="step">
-            <h4>📅 Schedule Management</h4>
-            <p>• View your timetable under <strong>Schedule</strong> menu</p>
-            <p>• Add study sessions to track personal study time</p>
-            <p>• Set due dates for assignments and exams</p>
-          </div>
-          <div class="step">
-            <h4>🔧 Troubleshooting</h4>
-            <p>• <strong>Library not connected?</strong> Run Tests → Show Library Diagnostic</p>
-            <p>• <strong>Functions not working?</strong> Run Tests → Test Library Connection</p>
-            <p>• <strong>Need to reset?</strong> Use System → Soft Reset or Nuke System</p>
-          </div>
-          <div class="step">
-            <h4>🛠️ Need Help?</h4>
-            <p>• Current Version: <strong>${version}</strong></p>
-            <p>• Check Changelog for recent updates</p>
-            <p>• Contact: support@unza.edu.zm</p>
-          </div>
-          <div style="margin-top: 20px; text-align: center;">
-            <button class="btn btn-primary" onclick="google.script.host.close()">Close</button>
-          </div>
-        </body>
-      </html>
-    `).setWidth(500).setHeight(700);
+    const html = HtmlService.createHtmlOutput(
+      `
+    <html>
+      <head>
+        <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+        <style>
+          body { font-family: 'Google Sans', sans-serif; padding: 20px; }
+          .step { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; }
+          .version-badge { 
+            background: #1a73e8; 
+            color: white; 
+            padding: 4px 12px; 
+            border-radius: 16px;
+            display: inline-block;
+            font-size: 14px;
+          }
+          .status { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        </style>
+      </head>
+      <body>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3 style="color:#1a73e8; margin:0">📋 UNZA Geology Tracker</h3>
+          <span class="version-badge">v${version}</span>
+        </div>
+        <div class="status">${statusMessage}</div>
+        <div class="step">
+          <h4>🚀 Getting Started</h4>
+          <p>1. Go to <strong>System → Initialize System</strong> to set up your database</p>
+          <p>2. Add your courses under <strong>Courses → Add Course</strong></p>
+          <p>3. Add assessments under <strong>Courses → Add Assessment</strong></p>
+          <p>4. Enter your grades under <strong>Grades → Enter Grades</strong></p>
+        </div>
+        <div class="step">
+          <h4>📊 Tracking Progress</h4>
+          <p>• View your GPA anytime from the Dashboard</p>
+          <p>• Check graduation requirements under Graduation Status</p>
+          <p>• Track expenses, certifications, and industrial training</p>
+        </div>
+        <div class="step">
+          <h4>📅 Schedule Management</h4>
+          <p>• View your timetable under <strong>Schedule</strong> menu</p>
+          <p>• Add study sessions to track personal study time</p>
+          <p>• Set due dates for assignments and exams</p>
+        </div>
+        <div class="step">
+          <h4>🔧 Troubleshooting</h4>
+          <p>• <strong>Library not connected?</strong> Run Tests → Show Library Diagnostic</p>
+          <p>• <strong>Functions not working?</strong> Run Tests → Test Library Connection</p>
+          <p>• <strong>Need to reset?</strong> Use System → Soft Reset or Nuke System</p>
+        </div>
+        <div class="step">
+          <h4>🛠️ Need Help?</h4>
+          <p>• Current Version: <strong>${version}</strong></p>
+          <p>• Check Changelog for recent updates</p>
+          <p>• Contact: support@unza.edu.zm</p>
+        </div>
+        <div style="margin-top: 20px; text-align: center;">
+          <button class="btn btn-primary" onclick="google.script.host.close()">Close</button>
+        </div>
+      </body>
+    </html>
+    `
+    )
+      .setWidth(500)
+      .setHeight(700);
     SpreadsheetApp.getUi().showModalDialog(html, '📋 User Guide');
   },
 
@@ -393,7 +416,7 @@ const TemplateLocal = {
 // TEST SUITE
 // ==============================================
 
-const TemplateTests = {
+TemplateTests = {
   runAllTemplateTests: function () {
     console.log('🔬 STARTING TEMPLATE TEST SUITE');
 
@@ -510,7 +533,7 @@ const TemplateTests = {
 // LIBRARY CHECKER
 // ==============================================
 
-const LibraryChecker = {
+LibraryChecker = {
   checkStatus: function () {
     console.log('🔍 Checking library status...');
 
@@ -617,228 +640,54 @@ const LibraryChecker = {
 };
 
 // ==============================================
-// GLOBAL WRAPPER FUNCTIONS - FIXED VERSION
-// These make ALL library functions available to the thin template
+// GLOBAL WRAPPER FUNCTIONS - EXPORTED TO 99_Exports.js
 // ==============================================
-
-// Dashboard & GPA
-function showUNZADashboard() { 
-  return showUNZADashboard ? showUNZADashboard() : null;
-}
-
-function showGPADetails() { 
-  return showGPADetails ? showGPADetails() : null;
-}
-
-function showProfileEditor() { 
-  if (typeof ProfileManager !== 'undefined' && typeof ProfileManager.showProfileEditor === 'function') {
-    return ProfileManager.showProfileEditor();
-  }
-  return null;
-}
-
-function viewProfile() { 
-  if (typeof ProfileManager !== 'undefined' && typeof ProfileManager.viewProfile === 'function') {
-    return ProfileManager.viewProfile();
-  }
-  return null;
-}
-
-function showProgramRequirements() { 
-  return showProgramRequirements ? showProgramRequirements() : null;
-}
-
-function checkGraduationReadiness() { 
-  return checkGraduationReadiness ? checkGraduationReadiness() : null;
-}
-
-// Courses
-function viewAllCourses() { 
-  return viewAllCourses ? viewAllCourses() : null;
-}
-
-function addCourse() { 
-  return addCourse ? addCourse() : null;
-}
-
-function viewAssessments() { 
-  return viewAssessments ? viewAssessments() : null;
-}
-
-function addAssessment() { 
-  return addAssessment ? addAssessment() : null;
-}
-
-function showCourseProgress() { 
-  return showCourseProgress ? showCourseProgress() : null;
-}
-
-// Grades
-function viewGrades() { 
-  return viewGrades ? viewGrades() : null;
-}
-
-function enterGrades() { 
-  return enterGrades ? enterGrades() : null;
-}
-
-// Certifications
-function viewCertifications() { 
-  return viewCertifications ? viewCertifications() : null;
-}
-
-function addCertification() { 
-  return addCertification ? addCertification() : null;
-}
-
-function checkCertExpiry() { 
-  return checkCertExpiry ? checkCertExpiry() : null;
-}
-
-// Training
-function viewTraining() { 
-  return viewTraining ? viewTraining() : null;
-}
-
-function addTraining() { 
-  return addTraining ? addTraining() : null;
-}
-
-function trackTrainingHours() { 
-  return trackTrainingHours ? trackTrainingHours() : null;
-}
-
-// Expenses
-function viewExpenses() { 
-  return viewExpenses ? viewExpenses() : null;
-}
-
-function addExpense() { 
-  return addExpense ? addExpense() : null;
-}
-
-function spendingAnalysis() { 
-  return spendingAnalysis ? spendingAnalysis() : null;
-}
-
-function viewFeeStructure() { 
-  return TemplateLocal.viewFeeStructure();
-}
-
-// Schedule
-function showTodaysSchedule() { 
-  return showTodaysSchedule ? showTodaysSchedule() : null;
-}
-
-function showWeeklySchedule() { 
-  return showWeeklySchedule ? showWeeklySchedule() : null;
-}
-
-function viewFullTimetable() { 
-  return viewFullTimetable ? viewFullTimetable() : null;
-}
-
-function showUpcomingDeadlines() { 
-  return showUpcomingDeadlines ? showUpcomingDeadlines() : null;
-}
-
-function viewStudySessions() { 
-  return viewStudySessions ? viewStudySessions() : null;
-}
-
-function addStudySession() { 
-  return addStudySession ? addStudySession() : null;
-}
-
-function addDueDate() { 
-  return addDueDate ? addDueDate() : null;
-}
-
-// Documents
-function uploadScript() { 
-  return uploadScript ? uploadScript() : null;
-}
-
-function openFolders() { 
-  return openFolders ? openFolders() : null;
-}
-
-function searchDocuments() { 
-  return searchDocuments ? searchDocuments() : null;
-}
-
-// Reports
-function createUNZAReport() { 
-  return createUNZAReport ? createUNZAReport() : null;
-}
-
-function emailProgressReport() { 
-  return emailProgressReport ? emailProgressReport() : null;
-}
-
-// System
-function initializeCompleteSystem() { 
-  return initializeCompleteSystem ? initializeCompleteSystem() : null;
-}
-
-function softReset() { 
-  return softReset ? softReset() : null;
-}
-
-function nukeSystem() { 
-  return nukeSystem ? nukeSystem() : null;
-}
-
-function showHiddenTables() { 
-  return showHiddenTables ? showHiddenTables() : null;
-}
-
-function hideDatabaseTables() { 
-  return hideDatabaseTables ? hideDatabaseTables() : null;
-}
-
-function showNormalizedTables() { 
-  return showNormalizedTables ? showNormalizedTables() : null;
-}
-
-function upgradeStudentsTable() { 
-  return upgradeStudentsTable ? upgradeStudentsTable() : null;
-}
-
-// ==============================================
-// EXPORTED HELPER FUNCTIONS
-// ==============================================
-
-function showVersion() {
-  TemplateVersion.showVersion();
-}
-
-function checkVersionCompatibility() {
-  return TemplateVersion.checkCompatibility();
-}
-
-function showHelp() {
-  TemplateLocal.showHelp();
-}
 
 function testLibraryConnection() {
-  TemplateTests.testLibraryConnection();
+  if (TemplateTests && typeof TemplateTests.testLibraryConnection === 'function') {
+    let results = {
+      passed: 0,
+      failed: 0,
+      total: 0,
+      details: [],
+    };
+    TemplateTests.testLibraryConnection(results);
+    TemplateTests.showResults(results);
+  } else {
+    showLibraryError('testLibraryConnection');
+  }
 }
 
 function runAllTemplateTests() {
-  TemplateTests.runAllTemplateTests();
+  if (TemplateTests && typeof TemplateTests.runAllTemplateTests === 'function') {
+    TemplateTests.runAllTemplateTests();
+  } else {
+    showLibraryError('runAllTemplateTests');
+  }
 }
 
 function showLibraryDiagnostic() {
-  LibraryChecker.showStatus();
+  if (LibraryChecker && typeof LibraryChecker.showStatus === 'function') {
+    LibraryChecker.showStatus();
+  } else {
+    showLibraryError('showLibraryDiagnostic');
+  }
 }
 
 function fixLibraryConnection() {
-  LibraryChecker.quickFix();
+  if (LibraryChecker && typeof LibraryChecker.quickFix === 'function') {
+    LibraryChecker.quickFix();
+  } else {
+    showLibraryError('fixLibraryConnection');
+  }
 }
 
 function forceLibraryReload() {
-  LibraryChecker.forceReload();
+  if (LibraryChecker && typeof LibraryChecker.forceReload === 'function') {
+    LibraryChecker.forceReload();
+  } else {
+    showLibraryError('forceLibraryReload');
+  }
 }
 
 function debugAvailableFunctions() {
@@ -855,6 +704,15 @@ function debugAvailableFunctions() {
   };
   console.log('📊 Available functions:', functions);
   return functions;
+}
+
+// Helper function for library errors
+function showLibraryError(functionName) {
+  SpreadsheetApp.getUi().alert(
+    '⚠️ Library Error',
+    `Function "${functionName}" not available.\n\nPlease check your library connection.`,
+    SpreadsheetApp.getUi().ButtonSet.OK
+  );
 }
 
 console.log('✅ Template helpers loaded successfully');

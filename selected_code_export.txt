@@ -1,6 +1,6 @@
 ========================================
 REPO: scholarscript_-_unza_school_of_mines_(geology_lib)
-DATE: Sun Mar 15 08:41:12 PM CAT 2026
+DATE: Sat Mar 28 06:08:54 PM CAT 2026
 ========================================
 
 // FILE: 01_Config.js
@@ -16,7 +16,7 @@ DATE: Sun Mar 15 08:41:12 PM CAT 2026
 // VERSION CONTROL - COMPLETE HISTORY v0.9.0 to v0.14.0
 // ==============================================
 
-const APP_VERSION = '0.15.0';
+const APP_VERSION = '0.15.5';
 const VERSION_HISTORY = {
   // Initial versions
   '0.9.0': 'Initial complete system with 14 sheets',
@@ -69,35 +69,19 @@ const VERSION_HISTORY = {
   // 🏛️ THIN TEMPLATE ARCHITECTURE
   '0.15.0':
     'THIN TEMPLATE MIGRATION: Moved all template-side logic (VersionSync, Constants, Utils, LocalFunctions, Tests, LibraryChecker) into library as 26_TemplateHelpers.js; Template now reduced to single ultra-thin file; Updates now propagate automatically to all users; Professional enterprise architecture achieved',
+
+  // 🐛 CONNECTION FIXES
+  '0.15.1':
+    'FIXED:.Template-library connection issues - Added GeologyLib export object with ALL functions; Fixed recursive wrapper functions; Resolved "is not a function" errors; Template now properly calls library methods via GeologyLib namespace; Complete thin template architecture now fully functional',
+  '0.15.2':
+    'FIXED: Critical hoisting error in 04_Menu.js - Changed const to var for template helper declarations to prevent "Cannot access before initialization" error; Menu now appears correctly; All export references now safely handled',
+  '0.15.3':
+    'FIXED: Library export timing issue - Moved GeologyLib export to dedicated 99_Exports.js file to ensure all functions are defined before export; Added guard in 26_TemplateHelpers.js for GeologyLib reference; Library now properly exports all 130+ functions; Template receives complete library object with no empty warnings',
+  '0.15.4':
+    'FIXED: Recursive wrapper functions in 26_TemplateHelpers.js - All global wrapper functions now properly call GeologyLib methods instead of themselves; Added proper null checks and error handling; Fixed infinite recursion causing stack overflow errors; All menu functions now work correctly; Added showLibraryError helper function for consistent error messages',
+  '0.15.5':
+    'CLEANUP: Removed duplicate global wrapper functions from 26_TemplateHelpers.js that were causing infinite recursion with thin template; Library now properly exports only core helper objects and functions; Architecture now clean with clear separation between thin template, helper objects, and library exports; All menu functions now execute without stack overflow errors',
 };
-
-function getVersionInfo() {
-  return `UNZA Geology Tracker v${APP_VERSION}`;
-}
-
-function showVersion() {
-  const ui = SpreadsheetApp.getUi();
-  let message = `📍 UNZA Geology Tracker v${APP_VERSION}\n\n`;
-
-  if (VERSION_HISTORY && VERSION_HISTORY[APP_VERSION]) {
-    message += `📌 Current: ${VERSION_HISTORY[APP_VERSION]}`;
-  }
-
-  // Show architecture info
-  message += `\n\n🏗️ Architecture: Template/Library Split (v0.13.1+)`;
-
-  // Add profile system info if available
-  if (typeof ProfileManager !== 'undefined') {
-    try {
-      const profile = ProfileManager.getProfileSummary();
-      message += `\n\n👤 ${profile.shortDisplay}`;
-    } catch (e) {
-      // Profile not set up yet
-    }
-  }
-
-  ui.alert(message);
-}
 
 function viewChangelog() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -396,6 +380,13 @@ const INIT_CONFIG = {
  * COMPLETE SYSTEM INITIALIZATION
  */
 function initializeCompleteSystem(includeDemoData) {
+  try {
+    const test = SpreadsheetApp.getUi();
+  } catch (e) {
+    console.log('initializeCompleteSystem called during script load - skipping');
+    return;
+  }
+
   const ui = SpreadsheetApp.getUi();
 
   if (includeDemoData === undefined) {
@@ -1376,38 +1367,6 @@ function setupDueDatesDemoData(ss) {
   dueDates.forEach((d) => sheet.appendRow(d));
 }
 
-/**
- * Creates or updates the changelog sheet
- */
-function setupChangelogSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName('_Changelog');
-
-  if (!sheet) {
-    sheet = ss.insertSheet('_Changelog');
-  } else {
-    sheet.clear();
-  }
-
-  const headers = [['Version', 'Date', 'Changes', 'Feedback From', 'Status']];
-  sheet.getRange(1, 1, 1, 5).setValues(headers);
-  sheet.getRange('A1:E1').setFontWeight('bold').setBackground('#e6f2ff');
-
-  if (typeof APP_VERSION !== 'undefined') {
-    sheet.appendRow([
-      APP_VERSION,
-      new Date(),
-      typeof VERSION_HISTORY !== 'undefined' && VERSION_HISTORY[APP_VERSION]
-        ? VERSION_HISTORY[APP_VERSION]
-        : 'Version update',
-      'System',
-      'Current',
-    ]);
-  }
-
-  sheet.autoResizeColumns(1, 5);
-}
-
 
 // FILE: 04_Menu.js
 // ==============================================
@@ -1418,6 +1377,18 @@ function setupChangelogSheet() {
 // School of Mines, University of Zambia
 // Version: 0.14.1
 // ==============================================
+
+// ==============================================
+// IMPORT TEMPLATE HELPERS - FIXED VERSION
+// ==============================================
+
+// Use var instead of const for hoisting safety
+var TemplateVersion = typeof TemplateVersion !== 'undefined' ? TemplateVersion : null;
+var TEMPLATE_CONSTANTS = typeof TEMPLATE_CONSTANTS !== 'undefined' ? TEMPLATE_CONSTANTS : null;
+var TemplateUtils = typeof TemplateUtils !== 'undefined' ? TemplateUtils : null;
+var TemplateLocal = typeof TemplateLocal !== 'undefined' ? TemplateLocal : null;
+var TemplateTests = typeof TemplateTests !== 'undefined' ? TemplateTests : null;
+var LibraryChecker = typeof LibraryChecker !== 'undefined' ? LibraryChecker : null;
 
 /**
  * Original onOpen function - keeps backward compatibility
@@ -1770,102 +1741,12 @@ function showAddExpenseModal() {
   }
 }
 
-
-// FILE: 05_Wrappers.js
-// ==============================================
-// 05_Wrappers.gs
-
-// ==============================================
-// WRAPPER FUNCTIONS for Menu Items
-// ==============================================
-
-function showAddCourseModal() {
-  if (typeof addCourse === 'function') {
-    addCourse();
-  } else {
-    showAlert('Course functions not loaded properly', 'error');
-  }
-}
-
-function showAddAssessmentModal() {
-  if (typeof addAssessment === 'function') {
-    addAssessment();
-  } else {
-    showAlert('Assessment functions not loaded properly', 'error');
-  }
-}
-
-function showAddCertificationModal() {
-  if (typeof addCertification === 'function') {
-    addCertification();
-  } else {
-    showAlert('Certification functions not loaded', 'error');
-  }
-}
-
-function showAddTrainingModal() {
-  if (typeof addTraining === 'function') {
-    addTraining();
-  } else {
-    showAlert('Training functions not loaded', 'error');
-  }
-}
-
-function showAddExpenseModal() {
-  if (typeof addExpense === 'function') {
-    addExpense();
-  } else {
-    showAlert('Expense functions not loaded', 'error');
-  }
-}
-
 function viewFeeStructure() {
-  const html = HtmlService.createHtmlOutput(
-    `
-    <html>
-      <head>
-        <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
-        <style>
-          body { font-family: 'Google Sans', sans-serif; padding: 20px; }
-          .fee-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-          .fee-table th { text-align: left; padding: 12px; background: #f8f9fa; }
-          .fee-table td { padding: 12px; border-bottom: 1px solid #dadce0; }
-        </style>
-      </head>
-      <body>
-        <h3 style="color:#1a73e8">UNZA SCHOOL OF MINES - FEE STRUCTURE</h3>
-        
-        <h4>A. Zambian Students</h4>
-        <table class="fee-table">
-          <tr><th>Programme</th><th>Tuition per Year</th></tr>
-          <tr><td>Science-Based</td><td><strong>K31,878.00</strong></td></tr>
-        </table>
-        
-        <h4>B. International Students</h4>
-        <table class="fee-table">
-          <tr><th>Programme</th><th>Tuition per Year</th></tr>
-          <tr><td>Science-Based</td><td><strong>K62,890.00</strong></td></tr>
-        </table>
-        
-        <h4>C. Other Fees</h4>
-        <table class="fee-table">
-          <tr><th>Fee Type</th><th>Amount</th><th>Period</th></tr>
-          <tr><td>Registration</td><td>K40.00</td><td>Per Year</td></tr>
-          <tr><td>Examination</td><td>K50.00</td><td>Per Course</td></tr>
-          <tr><td>Medical</td><td>K200.00</td><td>Per Year</td></tr>
-        </table>
-        
-        <div style="margin-top: 20px;">
-          <button class="btn btn-primary" onclick="google.script.host.close()">Close</button>
-        </div>
-      </body>
-    </html>
-  `
-  )
-    .setWidth(500)
-    .setHeight(500);
-
-  SpreadsheetApp.getUi().showModalDialog(html, '💰 Fee Structure');
+  if (typeof TemplateLocal !== 'undefined' && TemplateLocal.viewFeeStructure) {
+    TemplateLocal.viewFeeStructure();
+  } else {
+    showAlert('Fee structure function not available', 'error');
+  }
 }
 
 
@@ -2979,7 +2860,64 @@ function getAllCourses() {
 }
 
 function calculateCourseCA(courseCode) {
-  return { eligible: false, caAverage: 0, assessments: [] };
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const assessmentsSheet = ss.getSheetByName('_assessments');
+  const gradesSheet = ss.getSheetByName('_grades');
+  const coursesSheet = ss.getSheetByName('_courses');
+
+  if (!assessmentsSheet || !gradesSheet || !coursesSheet) {
+    return { eligible: false, caAverage: 0, assessments: [] };
+  }
+
+  // Find course ID from code
+  const courses = coursesSheet.getDataRange().getValues().slice(1);
+  let courseId = null;
+  for (let c of courses) {
+    if (c[1] === courseCode) {
+      courseId = c[0];
+      break;
+    }
+  }
+
+  if (!courseId) return { eligible: false, caAverage: 0, assessments: [] };
+
+  // Get assessments for this course
+  const assessments = assessmentsSheet.getDataRange().getValues().slice(1);
+  const courseAssessments = assessments.filter((a) => a[1] === courseId);
+
+  if (courseAssessments.length === 0) {
+    return { eligible: false, caAverage: 0, assessments: [] };
+  }
+
+  // Get grades
+  const grades = gradesSheet.getDataRange().getValues().slice(1);
+  let totalWeightedScore = 0;
+  let totalWeight = 0;
+  let completedAssessments = [];
+
+  for (let ass of courseAssessments) {
+    const grade = grades.find((g) => g[2] === ass[0]);
+    if (grade && grade[6] === 'Graded') {
+      const percentage = grade[4];
+      const weight = ass[4];
+      totalWeightedScore += (percentage / 100) * weight;
+      totalWeight += weight;
+      completedAssessments.push({
+        name: ass[3],
+        percentage: percentage,
+        weight: weight,
+      });
+    }
+  }
+
+  const caAverage = totalWeight > 0 ? (totalWeightedScore / totalWeight) * 100 : 0;
+  const eligible = caAverage >= 50;
+
+  return {
+    eligible: eligible,
+    caAverage: caAverage.toFixed(1),
+    assessments: completedAssessments,
+  };
 }
 
 
@@ -3368,16 +3306,35 @@ function enterGrades() {
 function getAssessmentDetails(assessmentId) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName('_assessments');
+  const coursesSheet = ss.getSheetByName('_courses');
+
+  if (!sheet) return { maxScore: 100, name: 'Unknown', courseCode: 'Unknown' };
 
   const data = sheet.getDataRange().getValues();
   for (let i = 1; i < data.length; i++) {
     if (data[i][0] === assessmentId) {
+      // Get course info
+      let courseCode = 'Unknown';
+      if (coursesSheet) {
+        const courses = coursesSheet.getDataRange().getValues();
+        for (let j = 1; j < courses.length; j++) {
+          if (courses[j][0] === data[i][1]) {
+            courseCode = courses[j][1];
+            break;
+          }
+        }
+      }
+
       return {
         maxScore: data[i][5],
+        name: data[i][3],
+        courseCode: courseCode,
+        weight: data[i][4],
+        dueDate: data[i][6],
       };
     }
   }
-  return { maxScore: 100 };
+  return { maxScore: 100, name: 'Unknown', courseCode: 'Unknown' };
 }
 
 function saveGrade(data) {
@@ -5875,73 +5832,6 @@ function getBaseHTML(innerContent) {
   `;
 }
 
-function showHelp() {
-  const html = HtmlService.createHtmlOutput(
-    `
-    <html>
-      <head>
-        <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
-        <style>
-          body { font-family: 'Google Sans', sans-serif; padding: 20px; }
-          .step { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; }
-          .version-badge { 
-            background: #1a73e8; 
-            color: white; 
-            padding: 4px 12px; 
-            border-radius: 16px;
-            display: inline-block;
-            font-size: 14px;
-          }
-        </style>
-      </head>
-      <body>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <h3 style="color:#1a73e8; margin:0">📋 UNZA Geology Tracker</h3>
-          <span class="version-badge">v${APP_VERSION}</span>
-        </div>
-        
-        <div class="step">
-          <h4>🚀 Getting Started</h4>
-          <p>1. Go to <strong>System → Initialize System</strong> to set up your database</p>
-          <p>2. Add your courses under <strong>Courses → Add Course</strong></p>
-          <p>3. Add assessments under <strong>Courses → Add Assessment</strong></p>
-          <p>4. Enter your grades under <strong>Grades → Enter Grades</strong></p>
-        </div>
-        
-        <div class="step">
-          <h4>📊 Tracking Progress</h4>
-          <p>• View your GPA anytime from the Dashboard</p>
-          <p>• Check graduation requirements under Graduation Status</p>
-          <p>• Track expenses, certifications, and industrial training</p>
-        </div>
-        
-        <div class="step">
-          <h4>📅 Schedule Management</h4>
-          <p>• View your timetable under <strong>Schedule</strong> menu</p>
-          <p>• Add study sessions to track personal study time</p>
-          <p>• Set due dates for assignments and exams</p>
-        </div>
-        
-        <div class="step">
-          <h4>🛠️ Need Help?</h4>
-          <p>• Current Version: <strong>${APP_VERSION}</strong></p>
-          <p>• Check Changelog for recent updates</p>
-          <p>• Contact: miselo@example.com</p>
-        </div>
-        
-        <div style="margin-top: 20px; text-align: center;">
-          <button class="btn btn-primary" onclick="google.script.host.close()">Close</button>
-        </div>
-      </body>
-    </html>
-  `
-  )
-    .setWidth(500)
-    .setHeight(600);
-
-  SpreadsheetApp.getUi().showModalDialog(html, '📋 User Guide');
-}
-
 
 // FILE: 23_Tests.js
 // ==============================================
@@ -7668,20 +7558,35 @@ function testProfileSystem() {
 // ==============================================
 // 26_TemplateHelpers.gs
 
+// 26_TemplateHelpers.gs
+
 // ==============================================
 // TEMPLATE HELPER FUNCTIONS - COMPLETE FIXED VERSION
 // All template-side logic moved to library
-// Version: 0.15.0
+// Version: 0.15.5
 // ==============================================
 
 // ==============================================
-// VERSION SYNC HELPERS (from template 02_VersionSync.js)
+// INITIALIZATION - Create empty objects FIRST
 // ==============================================
 
-const TemplateVersion = {
-  /**
-   * Get version from library
-   */
+if (typeof GeologyLib === 'undefined') {
+  var GeologyLib = {};
+}
+
+// Initialize ALL template objects as empty objects FIRST
+var TemplateVersion = {};
+var TEMPLATE_CONSTANTS = {};
+var TemplateUtils = {};
+var TemplateLocal = {};
+var TemplateTests = {};
+var LibraryChecker = {};
+
+// ==============================================
+// VERSION SYNC HELPERS
+// ==============================================
+
+TemplateVersion = {
   getVersion: function () {
     if (!GeologyLib) {
       return {
@@ -7691,7 +7596,6 @@ const TemplateVersion = {
       };
     }
 
-    // Method 1: getVersionInfo()
     if (typeof GeologyLib.getVersionInfo === 'function') {
       try {
         const versionInfo = GeologyLib.getVersionInfo();
@@ -7709,7 +7613,6 @@ const TemplateVersion = {
       }
     }
 
-    // Method 2: Direct APP_VERSION access
     if (GeologyLib.APP_VERSION) {
       return {
         success: true,
@@ -7719,7 +7622,6 @@ const TemplateVersion = {
       };
     }
 
-    // Method 3: CONFIG access
     if (GeologyLib.CONFIG && GeologyLib.CONFIG.version) {
       return {
         success: true,
@@ -7736,9 +7638,6 @@ const TemplateVersion = {
     };
   },
 
-  /**
-   * Show version info (combines template and library)
-   */
   showVersion: function () {
     const ui = SpreadsheetApp.getUi();
     const libVersion = this.getVersion();
@@ -7771,9 +7670,6 @@ const TemplateVersion = {
     ui.alert(message);
   },
 
-  /**
-   * Check if template and library versions are compatible
-   */
   checkCompatibility: function () {
     const libVersion = this.getVersion();
 
@@ -7786,11 +7682,9 @@ const TemplateVersion = {
       };
     }
 
-    // Parse versions
     const libParts = libVersion.version.split('.').map(Number);
-    const minParts = [0, 14, 0]; // Minimum required version for profile system
+    const minParts = [0, 14, 0];
 
-    // Check major version first
     if (libParts[0] !== minParts[0]) {
       return {
         compatible: libParts[0] > minParts[0],
@@ -7803,7 +7697,6 @@ const TemplateVersion = {
       };
     }
 
-    // Check minor version
     if (libParts[1] < minParts[1]) {
       return {
         compatible: false,
@@ -7823,10 +7716,10 @@ const TemplateVersion = {
 };
 
 // ==============================================
-// CONSTANTS (from template 03_Constants.js)
+// CONSTANTS
 // ==============================================
 
-const TEMPLATE_CONSTANTS = {
+TEMPLATE_CONSTANTS = {
   SUPPORT_EMAIL: 'support@unza.edu.zm',
   DOCS_URL: 'https://unza.edu.zm/geology-tracker',
   MESSAGES: {
@@ -7844,13 +7737,10 @@ const TEMPLATE_CONSTANTS = {
 };
 
 // ==============================================
-// UTILITY FUNCTIONS (from template 04_Utils.js)
+// UTILITY FUNCTIONS
 // ==============================================
 
-const TemplateUtils = {
-  /**
-   * Safely call a library function with error handling
-   */
+TemplateUtils = {
   safeCall: function (functionName, ...args) {
     try {
       if (!GeologyLib) {
@@ -7939,47 +7829,47 @@ const TemplateUtils = {
 };
 
 // ==============================================
-// LOCAL FUNCTIONS (from template 05_LocalFunctions.js)
+// LOCAL FUNCTIONS
 // ==============================================
 
-const TemplateLocal = {
+TemplateLocal = {
   viewFeeStructure: function () {
     const html = HtmlService.createHtmlOutput(
       `
-      <html>
-        <head>
-          <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
-          <style>
-            body { font-family: 'Google Sans', sans-serif; padding: 20px; }
-            .fee-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            .fee-table th { text-align: left; padding: 12px; background: #f8f9fa; }
-            .fee-table td { padding: 12px; border-bottom: 1px solid #dadce0; }
-          </style>
-        </head>
-        <body>
-          <h3 style="color:#1a73e8">UNZA SCHOOL OF MINES - FEE STRUCTURE</h3>
-          <h4>A. Zambian Students</h4>
-          <table class="fee-table">
+    <html>
+      <head>
+        <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+        <style>
+          body { font-family: 'Google Sans', sans-serif; padding: 20px; }
+          .fee-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          .fee-table th { text-align: left; padding: 12px; background: #f8f9fa; }
+          .fee-table td { padding: 12px; border-bottom: 1px solid #dadce0; }
+        </style>
+      </head>
+      <body>
+        <h3 style="color:#1a73e8">UNZA SCHOOL OF MINES - FEE STRUCTURE</h3>
+        <h4>A. Zambian Students</h4>
+        <table class="fee-table">
             <tr><th>Programme</th><th>Tuition per Year</th></tr>
             <tr><td>Science-Based</td><td><strong>K31,878.00</strong></td></tr>
-          </table>
-          <h4>B. International Students</h4>
-          <table class="fee-table">
+        </table>
+        <h4>B. International Students</h4>
+        <table class="fee-table">
             <tr><th>Programme</th><th>Tuition per Year</th></tr>
             <tr><td>Science-Based</td><td><strong>K62,890.00</strong></td></tr>
-          </table>
-          <h4>C. Other Fees</h4>
-          <table class="fee-table">
+        </table>
+        <h4>C. Other Fees</h4>
+        <table class="fee-table">
             <tr><th>Fee Type</th><th>Amount</th><th>Period</th></tr>
             <tr><td>Registration</td><td>K40.00</td><td>Per Year</td></tr>
             <tr><td>Examination</td><td>K50.00</td><td>Per Course</td></tr>
             <tr><td>Medical</td><td>K200.00</td><td>Per Year</td></tr>
-          </table>
-          <div style="margin-top: 20px;">
-            <button class="btn btn-primary" onclick="google.script.host.close()">Close</button>
-          </div>
-        </body>
-      </html>
+        </table>
+        <div style="margin-top: 20px;">
+          <button class="btn btn-primary" onclick="google.script.host.close()">Close</button>
+        </div>
+      </body>
+    </html>
     `
     )
       .setWidth(500)
@@ -7997,65 +7887,65 @@ const TemplateLocal = {
 
     const html = HtmlService.createHtmlOutput(
       `
-      <html>
-        <head>
-          <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
-          <style>
-            body { font-family: 'Google Sans', sans-serif; padding: 20px; }
-            .step { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; }
-            .version-badge { 
-              background: #1a73e8; 
-              color: white; 
-              padding: 4px 12px; 
-              border-radius: 16px;
-              display: inline-block;
-              font-size: 14px;
-            }
-            .status { margin: 10px 0; padding: 10px; border-radius: 4px; }
-          </style>
-        </head>
-        <body>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 style="color:#1a73e8; margin:0">📋 UNZA Geology Tracker</h3>
-            <span class="version-badge">v${version}</span>
-          </div>
-          <div class="status">${statusMessage}</div>
-          <div class="step">
-            <h4>🚀 Getting Started</h4>
-            <p>1. Go to <strong>System → Initialize System</strong> to set up your database</p>
-            <p>2. Add your courses under <strong>Courses → Add Course</strong></p>
-            <p>3. Add assessments under <strong>Courses → Add Assessment</strong></p>
-            <p>4. Enter your grades under <strong>Grades → Enter Grades</strong></p>
-          </div>
-          <div class="step">
-            <h4>📊 Tracking Progress</h4>
-            <p>• View your GPA anytime from the Dashboard</p>
-            <p>• Check graduation requirements under Graduation Status</p>
-            <p>• Track expenses, certifications, and industrial training</p>
-          </div>
-          <div class="step">
-            <h4>📅 Schedule Management</h4>
-            <p>• View your timetable under <strong>Schedule</strong> menu</p>
-            <p>• Add study sessions to track personal study time</p>
-            <p>• Set due dates for assignments and exams</p>
-          </div>
-          <div class="step">
-            <h4>🔧 Troubleshooting</h4>
-            <p>• <strong>Library not connected?</strong> Run Tests → Show Library Diagnostic</p>
-            <p>• <strong>Functions not working?</strong> Run Tests → Test Library Connection</p>
-            <p>• <strong>Need to reset?</strong> Use System → Soft Reset or Nuke System</p>
-          </div>
-          <div class="step">
-            <h4>🛠️ Need Help?</h4>
-            <p>• Current Version: <strong>${version}</strong></p>
-            <p>• Check Changelog for recent updates</p>
-            <p>• Contact: support@unza.edu.zm</p>
-          </div>
-          <div style="margin-top: 20px; text-align: center;">
-            <button class="btn btn-primary" onclick="google.script.host.close()">Close</button>
-          </div>
-        </body>
-      </html>
+    <html>
+      <head>
+        <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+        <style>
+          body { font-family: 'Google Sans', sans-serif; padding: 20px; }
+          .step { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; }
+          .version-badge { 
+            background: #1a73e8; 
+            color: white; 
+            padding: 4px 12px; 
+            border-radius: 16px;
+            display: inline-block;
+            font-size: 14px;
+          }
+          .status { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        </style>
+      </head>
+      <body>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3 style="color:#1a73e8; margin:0">📋 UNZA Geology Tracker</h3>
+          <span class="version-badge">v${version}</span>
+        </div>
+        <div class="status">${statusMessage}</div>
+        <div class="step">
+          <h4>🚀 Getting Started</h4>
+          <p>1. Go to <strong>System → Initialize System</strong> to set up your database</p>
+          <p>2. Add your courses under <strong>Courses → Add Course</strong></p>
+          <p>3. Add assessments under <strong>Courses → Add Assessment</strong></p>
+          <p>4. Enter your grades under <strong>Grades → Enter Grades</strong></p>
+        </div>
+        <div class="step">
+          <h4>📊 Tracking Progress</h4>
+          <p>• View your GPA anytime from the Dashboard</p>
+          <p>• Check graduation requirements under Graduation Status</p>
+          <p>• Track expenses, certifications, and industrial training</p>
+        </div>
+        <div class="step">
+          <h4>📅 Schedule Management</h4>
+          <p>• View your timetable under <strong>Schedule</strong> menu</p>
+          <p>• Add study sessions to track personal study time</p>
+          <p>• Set due dates for assignments and exams</p>
+        </div>
+        <div class="step">
+          <h4>🔧 Troubleshooting</h4>
+          <p>• <strong>Library not connected?</strong> Run Tests → Show Library Diagnostic</p>
+          <p>• <strong>Functions not working?</strong> Run Tests → Test Library Connection</p>
+          <p>• <strong>Need to reset?</strong> Use System → Soft Reset or Nuke System</p>
+        </div>
+        <div class="step">
+          <h4>🛠️ Need Help?</h4>
+          <p>• Current Version: <strong>${version}</strong></p>
+          <p>• Check Changelog for recent updates</p>
+          <p>• Contact: support@unza.edu.zm</p>
+        </div>
+        <div style="margin-top: 20px; text-align: center;">
+          <button class="btn btn-primary" onclick="google.script.host.close()">Close</button>
+        </div>
+      </body>
+    </html>
     `
     )
       .setWidth(500)
@@ -8081,10 +7971,10 @@ const TemplateLocal = {
 };
 
 // ==============================================
-// TEST SUITE (from template 07_Tests.js)
+// TEST SUITE
 // ==============================================
 
-const TemplateTests = {
+TemplateTests = {
   runAllTemplateTests: function () {
     console.log('🔬 STARTING TEMPLATE TEST SUITE');
 
@@ -8198,10 +8088,10 @@ const TemplateTests = {
 };
 
 // ==============================================
-// LIBRARY CHECKER (from template 10_LibraryChecker.js)
+// LIBRARY CHECKER
 // ==============================================
 
-const LibraryChecker = {
+LibraryChecker = {
   checkStatus: function () {
     console.log('🔍 Checking library status...');
 
@@ -8308,274 +8198,56 @@ const LibraryChecker = {
 };
 
 // ==============================================
-// GLOBAL WRAPPER FUNCTIONS - Connects template to library
-// These make ALL library functions available to the thin template
+// GLOBAL WRAPPER FUNCTIONS - EXPORTED TO 99_Exports.js
 // ==============================================
 
-// Dashboard & GPA
-function showUNZADashboard() { 
-  if (typeof showUNZADashboard === 'function') return showUNZADashboard();
-  throw new Error('Dashboard functions not available');
-}
-
-function showGPADetails() { 
-  if (typeof showGPADetails === 'function') return showGPADetails();
-  throw new Error('GPA functions not available');
-}
-
-function showProfileEditor() { 
-  if (typeof ProfileManager !== 'undefined' && typeof ProfileManager.showProfileEditor === 'function') {
-    return ProfileManager.showProfileEditor();
-  }
-  throw new Error('Profile editor not available');
-}
-
-function viewProfile() { 
-  if (typeof ProfileManager !== 'undefined' && typeof ProfileManager.viewProfile === 'function') {
-    return ProfileManager.viewProfile();
-  }
-  throw new Error('Profile viewer not available');
-}
-
-function showProgramRequirements() { 
-  if (typeof showProgramRequirements === 'function') return showProgramRequirements();
-  throw new Error('Program requirements not available');
-}
-
-function checkGraduationReadiness() { 
-  if (typeof checkGraduationReadiness === 'function') return checkGraduationReadiness();
-  throw new Error('Graduation check not available');
-}
-
-// Courses
-function viewAllCourses() { 
-  if (typeof viewAllCourses === 'function') return viewAllCourses();
-  throw new Error('Courses view not available');
-}
-
-function addCourse() { 
-  if (typeof addCourse === 'function') return addCourse();
-  throw new Error('Add course not available');
-}
-
-function viewAssessments() { 
-  if (typeof viewAssessments === 'function') return viewAssessments();
-  throw new Error('Assessments view not available');
-}
-
-function addAssessment() { 
-  if (typeof addAssessment === 'function') return addAssessment();
-  throw new Error('Add assessment not available');
-}
-
-function showCourseProgress() { 
-  if (typeof showCourseProgress === 'function') return showCourseProgress();
-  throw new Error('Course progress not available');
-}
-
-// Grades
-function viewGrades() { 
-  if (typeof viewGrades === 'function') return viewGrades();
-  throw new Error('Grades view not available');
-}
-
-function enterGrades() { 
-  if (typeof enterGrades === 'function') return enterGrades();
-  throw new Error('Enter grades not available');
-}
-
-// Certifications
-function viewCertifications() { 
-  if (typeof viewCertifications === 'function') return viewCertifications();
-  throw new Error('Certifications view not available');
-}
-
-function addCertification() { 
-  if (typeof addCertification === 'function') return addCertification();
-  throw new Error('Add certification not available');
-}
-
-function checkCertExpiry() { 
-  if (typeof checkCertExpiry === 'function') return checkCertExpiry();
-  throw new Error('Check certificate expiry not available');
-}
-
-// Training
-function viewTraining() { 
-  if (typeof viewTraining === 'function') return viewTraining();
-  throw new Error('Training view not available');
-}
-
-function addTraining() { 
-  if (typeof addTraining === 'function') return addTraining();
-  throw new Error('Add training not available');
-}
-
-function trackTrainingHours() { 
-  if (typeof trackTrainingHours === 'function') return trackTrainingHours();
-  throw new Error('Track training hours not available');
-}
-
-// Expenses
-function viewExpenses() { 
-  if (typeof viewExpenses === 'function') return viewExpenses();
-  throw new Error('Expenses view not available');
-}
-
-function addExpense() { 
-  if (typeof addExpense === 'function') return addExpense();
-  throw new Error('Add expense not available');
-}
-
-function spendingAnalysis() { 
-  if (typeof spendingAnalysis === 'function') return spendingAnalysis();
-  throw new Error('Spending analysis not available');
-}
-
-function viewFeeStructure() { 
-  return TemplateLocal.viewFeeStructure();
-}
-
-// Schedule
-function showTodaysSchedule() { 
-  if (typeof showTodaysSchedule === 'function') return showTodaysSchedule();
-  throw new Error('Today\'s schedule not available');
-}
-
-function showWeeklySchedule() { 
-  if (typeof showWeeklySchedule === 'function') return showWeeklySchedule();
-  throw new Error('Weekly schedule not available');
-}
-
-function viewFullTimetable() { 
-  if (typeof viewFullTimetable === 'function') return viewFullTimetable();
-  throw new Error('Full timetable not available');
-}
-
-function showUpcomingDeadlines() { 
-  if (typeof showUpcomingDeadlines === 'function') return showUpcomingDeadlines();
-  throw new Error('Upcoming deadlines not available');
-}
-
-function viewStudySessions() { 
-  if (typeof viewStudySessions === 'function') return viewStudySessions();
-  throw new Error('Study sessions not available');
-}
-
-function addStudySession() { 
-  if (typeof addStudySession === 'function') return addStudySession();
-  throw new Error('Add study session not available');
-}
-
-function addDueDate() { 
-  if (typeof addDueDate === 'function') return addDueDate();
-  throw new Error('Add due date not available');
-}
-
-// Documents
-function uploadScript() { 
-  if (typeof uploadScript === 'function') return uploadScript();
-  throw new Error('Upload script not available');
-}
-
-function openFolders() { 
-  if (typeof openFolders === 'function') return openFolders();
-  throw new Error('Open folders not available');
-}
-
-function searchDocuments() { 
-  if (typeof searchDocuments === 'function') return searchDocuments();
-  throw new Error('Search documents not available');
-}
-
-// Reports
-function createUNZAReport() { 
-  if (typeof createUNZAReport === 'function') return createUNZAReport();
-  throw new Error('Create report not available');
-}
-
-function emailProgressReport() { 
-  if (typeof emailProgressReport === 'function') return emailProgressReport();
-  throw new Error('Email progress report not available');
-}
-
-// System
-function initializeCompleteSystem() { 
-  if (typeof initializeCompleteSystem === 'function') return initializeCompleteSystem();
-  throw new Error('Initialize system not available');
-}
-
-function softReset() { 
-  if (typeof softReset === 'function') return softReset();
-  throw new Error('Soft reset not available');
-}
-
-function nukeSystem() { 
-  if (typeof nukeSystem === 'function') return nukeSystem();
-  throw new Error('Nuke system not available');
-}
-
-function showHiddenTables() { 
-  if (typeof showHiddenTables === 'function') return showHiddenTables();
-  throw new Error('Show hidden tables not available');
-}
-
-function hideDatabaseTables() { 
-  if (typeof hideDatabaseTables === 'function') return hideDatabaseTables();
-  throw new Error('Hide database tables not available');
-}
-
-function showNormalizedTables() { 
-  if (typeof showNormalizedTables === 'function') return showNormalizedTables();
-  throw new Error('Show normalized tables not available');
-}
-
-function upgradeStudentsTable() { 
-  if (typeof upgradeStudentsTable === 'function') return upgradeStudentsTable();
-  throw new Error('Upgrade students table not available');
-}
-
-// ==============================================
-// EXPORTED HELPER FUNCTIONS
-// ==============================================
-
-// Version functions
-function showVersion() {
-  TemplateVersion.showVersion();
-}
-
-function checkVersionCompatibility() {
-  return TemplateVersion.checkCompatibility();
-}
-
-// Help functions
-function showHelp() {
-  TemplateLocal.showHelp();
-}
-
-// Test functions
 function testLibraryConnection() {
-  TemplateTests.testLibraryConnection();
+  if (TemplateTests && typeof TemplateTests.testLibraryConnection === 'function') {
+    let results = {
+      passed: 0,
+      failed: 0,
+      total: 0,
+      details: [],
+    };
+    TemplateTests.testLibraryConnection(results);
+    TemplateTests.showResults(results);
+  } else {
+    showLibraryError('testLibraryConnection');
+  }
 }
 
 function runAllTemplateTests() {
-  TemplateTests.runAllTemplateTests();
+  if (TemplateTests && typeof TemplateTests.runAllTemplateTests === 'function') {
+    TemplateTests.runAllTemplateTests();
+  } else {
+    showLibraryError('runAllTemplateTests');
+  }
 }
 
-// Library checker functions
 function showLibraryDiagnostic() {
-  LibraryChecker.showStatus();
+  if (LibraryChecker && typeof LibraryChecker.showStatus === 'function') {
+    LibraryChecker.showStatus();
+  } else {
+    showLibraryError('showLibraryDiagnostic');
+  }
 }
 
 function fixLibraryConnection() {
-  LibraryChecker.quickFix();
+  if (LibraryChecker && typeof LibraryChecker.quickFix === 'function') {
+    LibraryChecker.quickFix();
+  } else {
+    showLibraryError('fixLibraryConnection');
+  }
 }
 
 function forceLibraryReload() {
-  LibraryChecker.forceReload();
+  if (LibraryChecker && typeof LibraryChecker.forceReload === 'function') {
+    LibraryChecker.forceReload();
+  } else {
+    showLibraryError('forceLibraryReload');
+  }
 }
 
-// Debug function
 function debugAvailableFunctions() {
   const functions = {
     showUNZADashboard: typeof showUNZADashboard === 'function',
@@ -8592,5 +8264,225 @@ function debugAvailableFunctions() {
   return functions;
 }
 
+// Helper function for library errors
+function showLibraryError(functionName) {
+  SpreadsheetApp.getUi().alert(
+    '⚠️ Library Error',
+    `Function "${functionName}" not available.\n\nPlease check your library connection.`,
+    SpreadsheetApp.getUi().ButtonSet.OK
+  );
+}
+
 console.log('✅ Template helpers loaded successfully');
+
+
+// FILE: 99_Exports.js
+// ==============================================
+// ==============================================
+// FILE: 99_Exports.js
+// ==============================================
+// FINAL EXPORT - MUST BE LAST FILE
+// ==============================================
+
+// Use var instead of const to match the declaration in 26_TemplateHelpers.js
+GeologyLib = {
+  // ========== VERSION ==========
+  getVersionInfo: function () {
+    return TemplateVersion.getVersion().full;
+  },
+  showVersion: function () {
+    TemplateVersion.showVersion();
+  },
+  viewChangelog: viewChangelog,
+  viewFullChangelog: viewFullChangelog,
+  addChangelogEntryPrompt: addChangelogEntryPrompt,
+  addChangelogEntry: addChangelogEntry,
+  setupChangelogSheet: setupChangelogSheet,
+  versionCompare: versionCompare,
+
+  // ========== INIT ==========
+  initializeCompleteSystem: initializeCompleteSystem,
+  upgradeStudentsTable: upgradeStudentsTable,
+
+  // ========== MENU ==========
+  onOpen: onOpen,
+  createFullMenu: createFullMenu,
+  checkLibraryStatus: checkLibraryStatus,
+
+  // ========== WRAPPERS ==========
+  showAddCourseModal: showAddCourseModal,
+  showAddAssessmentModal: showAddAssessmentModal,
+  showAddCertificationModal: showAddCertificationModal,
+  showAddTrainingModal: showAddTrainingModal,
+  showAddExpenseModal: showAddExpenseModal,
+  viewFeeStructure: viewFeeStructure,
+
+  // ========== GPA ==========
+  calculateUNGPA: calculateUNGPA,
+  calculateNormalizedGPA: calculateNormalizedGPA,
+  percentageToGradePoint: percentageToGradePoint,
+  calculateLegacyGPA: calculateLegacyGPA,
+  showGPADetails: showGPADetails,
+
+  // ========== PROGRAM REQUIREMENTS ==========
+  showProgramRequirements: showProgramRequirements,
+  showDetailedRequirements: showDetailedRequirements,
+  checkCategoryRequirement: checkCategoryRequirement,
+  getRequirementsSummary: getRequirementsSummary,
+  calculateUNZAProgress: calculateUNZAProgress,
+  getDefaultProgress: getDefaultProgress,
+
+  // ========== COURSES ==========
+  viewAllCourses: viewAllCourses,
+  saveCourse: saveCourse,
+  showEditCourseModal: showEditCourseModal,
+  updateCourse: updateCourse,
+  deleteCourse: deleteCourse,
+  showCourseProgress: showCourseProgress,
+  getAllCourses: getAllCourses,
+  calculateCourseCA: calculateCourseCA,
+
+  // ========== ASSESSMENTS ==========
+  viewAssessments: viewAssessments,
+  saveAssessment: saveAssessment,
+  deleteAssessment: deleteAssessment,
+
+  // ========== GRADES ==========
+  enterGrades: enterGrades,
+  getAssessmentDetails: getAssessmentDetails,
+  saveGrade: saveGrade,
+  viewGrades: viewGrades,
+
+  // ========== CERTIFICATIONS ==========
+  viewCertifications: viewCertifications,
+  saveCertification: saveCertification,
+  deleteCertification: deleteCertification,
+  checkCertExpiry: checkCertExpiry,
+
+  // ========== EXPENSES ==========
+  viewExpenses: viewExpenses,
+  saveExpense: saveExpense,
+  deleteExpense: deleteExpense,
+  spendingAnalysis: spendingAnalysis,
+
+  // ========== TIMETABLE ==========
+  showTodaysSchedule: showTodaysSchedule,
+  showWeeklySchedule: showWeeklySchedule,
+  viewFullTimetable: viewFullTimetable,
+  getCourseCode: getCourseCode,
+
+  // ========== STUDY SESSIONS ==========
+  viewStudySessions: viewStudySessions,
+  addStudySession: addStudySession,
+  saveStudySession: saveStudySession,
+  markStudySessionCompleted: markStudySessionCompleted,
+  deleteStudySession: deleteStudySession,
+  showStudyStats: showStudyStats,
+  getWeeklyStudySummary: getWeeklyStudySummary,
+
+  // ========== DUE DATES ==========
+  showUpcomingDeadlines: showUpcomingDeadlines,
+  addDueDate: addDueDate,
+  saveDueDate: saveDueDate,
+
+  // ========== TRAINING ==========
+  viewTraining: viewTraining,
+  saveTraining: saveTraining,
+  trackTrainingHours: trackTrainingHours,
+  deleteTraining: deleteTraining,
+
+  // ========== DASHBOARD ==========
+  showUNZADashboard: showUNZADashboard,
+  getMotivationalMessage: getMotivationalMessage,
+  createProgressBar: createProgressBar,
+  getCourseCount: getCourseCount,
+  getAssessmentCount: getAssessmentCount,
+  getGradeCount: getGradeCount,
+
+  // ========== REPORTS ==========
+  createUNZAReport: createUNZAReport,
+  emailProgressReport: emailProgressReport,
+  checkGraduationReadiness: checkGraduationReadiness,
+
+  // ========== DOCUMENTS ==========
+  uploadScript: uploadScript,
+  openFolders: openFolders,
+  searchDocuments: searchDocuments,
+
+  // ========== SYSTEM RESETS ==========
+  nukeSystem: nukeSystem,
+  softReset: softReset,
+  clearNormalizedData: clearNormalizedData,
+
+  // ========== NORMALIZED SHEETS ==========
+  showNormalizedTables: showNormalizedTables,
+  showHiddenTables: showHiddenTables,
+  hideDatabaseTables: hideDatabaseTables,
+
+  // ========== UI HELPERS ==========
+  showModal: showModal,
+  showToast: showToast,
+  showAlert: showAlert,
+  showConfirm: showConfirm,
+  getBaseHTML: getBaseHTML,
+  showHelp: function () {
+    TemplateLocal.showHelp();
+  },
+
+  // ========== TESTS - Complete List ==========
+  // Basic tests
+  testGPA: testGPA,
+  testProgress: testProgress,
+  testProfile: testProfile,
+  runAllLibraryTests: runAllLibraryTests,
+
+  // Individual test functions
+  testConfig: testConfig,
+  testDatabase: testDatabase,
+  testCourses: testCourses,
+  testAssessments: testAssessments,
+  testGrades: testGrades,
+  testCertifications: testCertifications,
+  testExpenses: testExpenses,
+  testTraining: testTraining,
+  testTimetable: testTimetable,
+  testStudySessions: testStudySessions,
+  testDueDates: testDueDates,
+  testReports: testReports,
+  testSystem: testSystem,
+  testUI: testUI,
+  testProfileSystem: testProfileSystem,
+
+  // ========== PROFILE ==========
+  showProfileEditor: showProfileEditor,
+  viewProfile: viewProfile,
+  updateProfile: updateProfile,
+  getProfileSummary: getProfileSummary,
+
+  // ========== TEMPLATE HELPERS ==========
+  TemplateVersion: TemplateVersion,
+  TEMPLATE_CONSTANTS: TEMPLATE_CONSTANTS,
+  TemplateUtils: TemplateUtils,
+  TemplateLocal: TemplateLocal,
+  TemplateTests: TemplateTests,
+  LibraryChecker: LibraryChecker,
+
+  // ========== DIAGNOSTIC HELPERS ==========
+  testLibraryConnection: testLibraryConnection,
+  runAllTemplateTests: runAllTemplateTests,
+  showLibraryDiagnostic: showLibraryDiagnostic,
+  fixLibraryConnection: fixLibraryConnection,
+  forceLibraryReload: forceLibraryReload,
+  debugAvailableFunctions: debugAvailableFunctions,
+};
+
+// Make it globally available
+this.GeologyLib = GeologyLib;
+
+// Log the number of functions exported
+var functionCount = Object.keys(GeologyLib).filter(
+  (key) => typeof GeologyLib[key] === 'function'
+).length;
+console.log(`✅ FINAL EXPORT: GeologyLib ready with ${functionCount} functions`);
+
 

@@ -426,5 +426,62 @@ function getAllCourses() {
 }
 
 function calculateCourseCA(courseCode) {
-  return { eligible: false, caAverage: 0, assessments: [] };
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const assessmentsSheet = ss.getSheetByName('_assessments');
+  const gradesSheet = ss.getSheetByName('_grades');
+  const coursesSheet = ss.getSheetByName('_courses');
+
+  if (!assessmentsSheet || !gradesSheet || !coursesSheet) {
+    return { eligible: false, caAverage: 0, assessments: [] };
+  }
+
+  // Find course ID from code
+  const courses = coursesSheet.getDataRange().getValues().slice(1);
+  let courseId = null;
+  for (let c of courses) {
+    if (c[1] === courseCode) {
+      courseId = c[0];
+      break;
+    }
+  }
+
+  if (!courseId) return { eligible: false, caAverage: 0, assessments: [] };
+
+  // Get assessments for this course
+  const assessments = assessmentsSheet.getDataRange().getValues().slice(1);
+  const courseAssessments = assessments.filter((a) => a[1] === courseId);
+
+  if (courseAssessments.length === 0) {
+    return { eligible: false, caAverage: 0, assessments: [] };
+  }
+
+  // Get grades
+  const grades = gradesSheet.getDataRange().getValues().slice(1);
+  let totalWeightedScore = 0;
+  let totalWeight = 0;
+  let completedAssessments = [];
+
+  for (let ass of courseAssessments) {
+    const grade = grades.find((g) => g[2] === ass[0]);
+    if (grade && grade[6] === 'Graded') {
+      const percentage = grade[4];
+      const weight = ass[4];
+      totalWeightedScore += (percentage / 100) * weight;
+      totalWeight += weight;
+      completedAssessments.push({
+        name: ass[3],
+        percentage: percentage,
+        weight: weight,
+      });
+    }
+  }
+
+  const caAverage = totalWeight > 0 ? (totalWeightedScore / totalWeight) * 100 : 0;
+  const eligible = caAverage >= 50;
+
+  return {
+    eligible: eligible,
+    caAverage: caAverage.toFixed(1),
+    assessments: completedAssessments,
+  };
 }

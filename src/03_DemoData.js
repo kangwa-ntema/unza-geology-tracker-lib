@@ -499,35 +499,3 @@ function setupDueDatesDemoData(ss) {
 
   dueDates.forEach((d) => sheet.appendRow(d));
 }
-
-/**
- * Creates or updates the changelog sheet
- */
-function setupChangelogSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName('_Changelog');
-
-  if (!sheet) {
-    sheet = ss.insertSheet('_Changelog');
-  } else {
-    sheet.clear();
-  }
-
-  const headers = [['Version', 'Date', 'Changes', 'Feedback From', 'Status']];
-  sheet.getRange(1, 1, 1, 5).setValues(headers);
-  sheet.getRange('A1:E1').setFontWeight('bold').setBackground('#e6f2ff');
-
-  if (typeof APP_VERSION !== 'undefined') {
-    sheet.appendRow([
-      APP_VERSION,
-      new Date(),
-      typeof VERSION_HISTORY !== 'undefined' && VERSION_HISTORY[APP_VERSION]
-        ? VERSION_HISTORY[APP_VERSION]
-        : 'Version update',
-      'System',
-      'Current',
-    ]);
-  }
-
-  sheet.autoResizeColumns(1, 5);
-}
